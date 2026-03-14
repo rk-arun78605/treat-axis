@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## TreatAxis
 
-## Getting Started
+TreatAxis is a Next.js medical tourism platform homepage built around SEO, trust, and patient inquiry conversion.
 
-First, run the development server:
+## Local Development
+
+Install dependencies and start the app:
 
 ```bash
+npm ci
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Validation
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Use the same checks as CI:
 
-## Learn More
+```bash
+npm run lint
+npm run build
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Inquiry Flow
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The homepage lead form posts to `app/api/inquiries/route.ts`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Lead channels supported by environment variable:
 
-## Deploy on Vercel
+- `LEAD_WEBHOOK_URL` for generic automation/webhook
+- `WHATSAPP_WEBHOOK_URL` for WhatsApp workflow bridge
+- `GOOGLE_SHEETS_WEBHOOK_URL` for Apps Script or no-code sheet logging
+- `CRM_WEBHOOK_URL` for custom CRM ingestion endpoint
+- `RESEND_API_KEY` + `LEAD_EMAIL_FROM` + `LEAD_EMAIL_TO` for email delivery
+- `HUBSPOT_PRIVATE_APP_TOKEN` for HubSpot contact creation
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+If multiple channels are configured, the API dispatches to all of them.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## GitHub CI/CD
+
+Three GitHub Actions workflows are included:
+
+- `.github/workflows/ci.yml` runs lint and production build on pushes and pull requests.
+- `.github/workflows/deploy-vercel.yml` deploys to Vercel when the required secrets are configured.
+- `.github/workflows/backup-artifact.yml` stores a source-code backup artifact for each main branch push.
+
+Add these GitHub repository secrets before enabling deployment:
+
+- `VERCEL_TOKEN`
+- `VERCEL_ORG_ID`
+- `VERCEL_PROJECT_ID`
+
+## GitHub Backup
+
+To back the code up to GitHub itself, create a GitHub repository and push this project:
+
+```bash
+git init
+git add .
+git commit -m "Initial TreatAxis website"
+git branch -M main
+git remote add origin <your-github-repo-url>
+git push -u origin main
+```
+
+Once that is done, GitHub becomes the primary source backup, and the workflow artifacts give you an additional restorable snapshot on each main push.

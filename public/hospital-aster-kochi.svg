@@ -1,0 +1,39 @@
+<svg width="1200" height="720" viewBox="0 0 1200 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="720" fill="#0D1B2A"/>
+  <rect width="1200" height="720" fill="url(#paint0_linear_aster)"/>
+  <circle cx="1015" cy="118" r="175" fill="#2DD4BF" fill-opacity="0.18"/>
+  <circle cx="167" cy="137" r="125" fill="#F59E0B" fill-opacity="0.16"/>
+  <path d="M133 581H400V247C400 224.909 382.091 207 360 207H173C150.909 207 133 224.909 133 247V581Z" fill="#F8FAFC" fill-opacity="0.18"/>
+  <path d="M436 581H758V169C758 146.909 740.091 129 718 129H476C453.909 129 436 146.909 436 169V581Z" fill="#F8FAFC" fill-opacity="0.23"/>
+  <path d="M792 581H1067V273C1067 250.909 1049.09 233 1027 233H832C809.909 233 792 250.909 792 273V581Z" fill="#F8FAFC" fill-opacity="0.17"/>
+  <path d="M551 194L573 241H624L583 272L599 321L551 292L503 321L519 272L478 241H529L551 194Z" fill="#2DD4BF" fill-opacity="0.8"/>
+  <g fill="#E2E8F0" fill-opacity="0.38">
+    <rect x="178" y="289" width="41" height="41" rx="5"/>
+    <rect x="244" y="289" width="41" height="41" rx="5"/>
+    <rect x="310" y="289" width="41" height="41" rx="5"/>
+    <rect x="178" y="353" width="41" height="41" rx="5"/>
+    <rect x="244" y="353" width="41" height="41" rx="5"/>
+    <rect x="310" y="353" width="41" height="41" rx="5"/>
+    <rect x="488" y="258" width="31" height="31" rx="4"/>
+    <rect x="542" y="258" width="31" height="31" rx="4"/>
+    <rect x="596" y="258" width="31" height="31" rx="4"/>
+    <rect x="650" y="258" width="31" height="31" rx="4"/>
+    <rect x="488" y="312" width="31" height="31" rx="4"/>
+    <rect x="542" y="312" width="31" height="31" rx="4"/>
+    <rect x="596" y="312" width="31" height="31" rx="4"/>
+    <rect x="650" y="312" width="31" height="31" rx="4"/>
+    <rect x="847" y="301" width="39" height="39" rx="5"/>
+    <rect x="910" y="301" width="39" height="39" rx="5"/>
+    <rect x="973" y="301" width="39" height="39" rx="5"/>
+    <rect x="847" y="364" width="39" height="39" rx="5"/>
+    <rect x="910" y="364" width="39" height="39" rx="5"/>
+    <rect x="973" y="364" width="39" height="39" rx="5"/>
+  </g>
+  <path d="M0 602C158 548 284 541 400 565C523 590 637 635 778 624C942 612 1067 561 1200 522V720H0V602Z" fill="#020617" fill-opacity="0.48"/>
+  <defs>
+    <linearGradient id="paint0_linear_aster" x1="600" y1="0" x2="600" y2="720" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#10243C"/>
+      <stop offset="1" stop-color="#1F2937"/>
+    </linearGradient>
+  </defs>
+</svg>

@@ -1,0 +1,10 @@
+<svg width="1200" height="700" viewBox="0 0 1200 700" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="700" fill="#FFF7ED"/>
+  <rect x="110" y="120" width="980" height="460" rx="26" fill="white" stroke="#C2410C" stroke-width="6"/>
+  <rect x="170" y="190" width="860" height="110" rx="14" fill="#FFEDD5"/>
+  <rect x="170" y="320" width="280" height="200" rx="12" fill="#FED7AA"/>
+  <rect x="470" y="320" width="260" height="200" rx="12" fill="#FED7AA"/>
+  <rect x="750" y="320" width="280" height="200" rx="12" fill="#FED7AA"/>
+  <path d="M580 170L600 130L620 170H580Z" fill="#C2410C"/>
+  <text x="600" y="640" text-anchor="middle" fill="#0F172A" font-size="42" font-family="Arial, sans-serif" font-weight="700">Amrita Hospital Kochi</text>
+</svg>

@@ -1,65 +1,358 @@
-import Image from "next/image";
+import type { Metadata } from "next";
+import Link from "next/link";
+import Script from "next/script";
+import { TreaHeroAssistant } from "./components/trea-hero-assistant";
+import { TreaChatWidget } from "./components/trea-chat-widget";
+import { destinations, treatments } from "../lib/seo-content";
+
+const treatmentCategories = [
+  {
+    title: "Cardiac care",
+    description:
+      "Initial screening, treatment planning, and hospital coordination for planned heart procedures.",
+  },
+  {
+    title: "Orthopedic surgery",
+    description:
+      "Joint replacement, spine consultations, and rehabilitation-focused treatment pathways abroad.",
+  },
+  {
+    title: "Fertility and women's health",
+    description:
+      "Private, coordinated support for IVF, gynecology, and second-opinion requests.",
+  },
+  {
+    title: "Cosmetic and dental procedures",
+    description:
+      "Transparent planning for elective care, timelines, aftercare, and travel readiness.",
+  },
+];
+
+const faqItems = [
+  {
+    question: "How does TreatAxis help international patients?",
+    answer:
+      "TreatAxis helps patients submit one inquiry, organize treatment details, and move forward with a clearer care pathway for treatment abroad.",
+  },
+  {
+    question: "What should a patient include in the inquiry form?",
+    answer:
+      "The most useful inquiries include the treatment needed, country of residence, preferred destination, budget expectations, and any available medical reports.",
+  },
+  {
+    question: "Can TreatAxis support planned treatments instead of emergencies?",
+    answer:
+      "Yes. The homepage and lead flow are positioned for planned care, elective procedures, second opinions, and organized medical travel journeys.",
+  },
+  {
+    question: "Why is this homepage useful before treatment abroad?",
+    answer:
+      "It gives practical guidance patients need before medical travel: treatment pathways, hospital and city comparison, visa and stay planning, and a direct inquiry flow for next steps.",
+  },
+];
+
+const trustSignals = [
+  "Patient-first inquiry flow designed for planned medical travel",
+  "Clear treatment abroad guidance for hospitals, doctors, visa, stay, and recovery",
+  "Webhook-ready lead system for CRM, email, or automation handoff",
+  "Clear visual hierarchy, fast scanning, and mobile-first conversion UX",
+];
+
+const patientSupportHighlights = [
+  {
+    title: "Hospital matching",
+    description:
+      "Shortlists shaped around treatment need, age, recovery pace, and travel comfort instead of random hospital lists.",
+  },
+  {
+    title: "Travel and visa help",
+    description:
+      "Medical visa guidance, airport pickup planning, and paperwork preparation for patients and attendants.",
+  },
+  {
+    title: "Stay and recovery planning",
+    description:
+      "Hotel options near the hospital, food suitability, medicine pickup, and post-treatment follow-up timing.",
+  },
+  {
+    title: "Africa and Maldives focus",
+    description:
+      "Content designed for patients traveling from East Africa, West Africa, North Africa, and Maldives for planned care in India.",
+  },
+  {
+    title: "Multiple hospital options",
+    description:
+      "Each treatment pathway includes options across Delhi, Bengaluru, and Kerala so patients can compare more than one hospital before deciding.",
+  },
+  {
+    title: "Doctor profile guidance",
+    description:
+      "Cards include specialist profile highlights to help families understand which doctor expertise to prioritize during consultation booking.",
+  },
+];
+
+const patientJourneyGuides = [
+  {
+    title: "Before you travel",
+    description:
+      "Understand reports needed, likely visa path, travel window, and how many days you may need to stay in India.",
+  },
+  {
+    title: "During treatment",
+    description:
+      "Compare hospital location, interpreter availability, food convenience, hotel distance, and support for attendants.",
+  },
+  {
+    title: "After discharge",
+    description:
+      "Know the expected rest period, medicine access, follow-up scans, and what can continue safely after returning home.",
+  },
+];
+
+const medicalTourismContent = [
+  "Medical tourism works best when treatment choice, travel timing, and recovery planning are considered together rather than in isolation.",
+  "Patients often need more than a hospital name. They also need clarity on medical visa process, length of stay, attendant support, local transport, and safe post-treatment recovery.",
+  "TreatAxis content is built around these real decisions so users searching from Africa and Maldives can compare India pathways with less confusion and fewer hidden steps.",
+];
+
+export const metadata: Metadata = {
+  title: "Plan Treatment Abroad With Confidence",
+  description:
+    "TreatAxis helps patients plan treatment abroad with confidence using clear medical tourism guidance, hospital comparisons, and a direct inquiry flow.",
+  alternates: {
+    canonical: "/",
+  },
+};
+
+const schema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      name: "TreatAxis",
+      url: "https://www.treataxis.com",
+      slogan: "Plan Treatment Abroad With Confidence",
+      description:
+        "TreatAxis is a medical tourism platform that helps international patients explore treatment abroad and submit planned care inquiries.",
+    },
+    {
+      "@type": "WebSite",
+      name: "TreatAxis",
+      url: "https://www.treataxis.com",
+    },
+    {
+      "@type": "Service",
+      name: "Medical tourism inquiry support",
+      provider: {
+        "@type": "Organization",
+        name: "TreatAxis",
+      },
+      areaServed: "Worldwide",
+      serviceType: "Medical tourism planning and patient inquiry support",
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: faqItems.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: item.answer,
+        },
+      })),
+    },
+  ],
+};
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <>
+      <Script
+        id="treataxis-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      />
+      <main className="relative overflow-hidden">
+        <div className="absolute inset-x-0 top-0 -z-10 h-[36rem] bg-[radial-gradient(circle_at_top,rgba(15,118,110,0.18),transparent_48%)]" />
+
+        <section className="mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-12 px-6 py-8 lg:px-10">
+          <section
+            id="planner"
+            className="space-y-8 rounded-[2rem] border border-[var(--line)] bg-[var(--surface-strong)] p-8 shadow-[0_28px_100px_rgba(15,23,42,0.08)] backdrop-blur lg:p-12"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <TreaHeroAssistant />
+
+            <div className="max-w-4xl">
+              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[var(--accent)]">
+                Plan treatment abroad with confidence
+              </p>
+              <h1 className="mt-5 max-w-4xl font-display text-5xl leading-none text-slate-950 sm:text-6xl lg:text-7xl">
+                Medical tourism planning for hospitals, visa, stay, and recovery in India.
+              </h1>
+              <p className="mt-6 max-w-3xl text-lg leading-8 text-[var(--muted)] sm:text-xl">
+                TreatAxis helps patients from Africa and Maldives compare treatment pathways in India with hospital guidance, visa direction, hotel planning, food support, and realistic post-treatment recovery timelines.
+              </p>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-4">
+              {trustSignals.map((item) => (
+                <div
+                  key={item}
+                  className="rounded-[1.5rem] border border-[var(--line)] bg-white/80 p-5 text-sm leading-7 text-slate-700"
+                >
+                  {item}
+                </div>
+              ))}
+            </div>
+
+            <div className="grid gap-4 rounded-[1.75rem] border border-[var(--line)] bg-white/70 p-5 md:grid-cols-2">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.26em] text-[var(--accent)]">
+                  Treatment pages
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {treatments.map((item) => (
+                    <Link
+                      key={item.slug}
+                      href={`/treatments/${item.slug}`}
+                      className="rounded-full border border-[var(--line)] bg-white px-3 py-2 text-xs font-semibold text-slate-800 transition hover:border-[var(--brand)] hover:text-[var(--brand)]"
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.26em] text-[var(--accent)]">
+                  Destination pages
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {destinations.slice(0, 4).map((item) => (
+                    <Link
+                      key={item.slug}
+                      href={`/destinations/${item.slug}`}
+                      className="rounded-full border border-[var(--line)] bg-white px-3 py-2 text-xs font-semibold text-slate-800 transition hover:border-[var(--brand)] hover:text-[var(--brand)]"
+                    >
+                      {item.country}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section
+            id="why-treataxis"
+            className="grid gap-8 rounded-[2rem] border border-[var(--line)] bg-[var(--surface)] p-8 backdrop-blur lg:grid-cols-[0.9fr_1.1fr] lg:p-10"
           >
-            Documentation
-          </a>
-        </div>
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.28em] text-[var(--brand)]">
+                Medical tourism support
+              </p>
+              <h2 className="mt-4 font-display text-4xl leading-tight text-slate-950 sm:text-5xl">
+                Patient-first support for planning treatment abroad safely.
+              </h2>
+              <p className="mt-5 max-w-xl text-base leading-8 text-[var(--muted)]">
+                This section focuses on what international patients actually need before choosing medical treatment in India: hospital selection, visa planning, recovery stay, attendant support, and safe coordination after discharge.
+              </p>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2">
+              {patientSupportHighlights.map((item) => (
+                <article
+                  key={item.title}
+                  className="rounded-[1.5rem] border border-[var(--line)] bg-white/75 p-5"
+                >
+                  <h3 className="text-lg font-semibold text-slate-900">{item.title}</h3>
+                  <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{item.description}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="grid gap-8 lg:grid-cols-[0.92fr_1.08fr]">
+            <article className="rounded-[2rem] border border-[var(--line)] bg-slate-950 p-8 text-slate-50 shadow-[0_24px_100px_rgba(15,23,42,0.18)] lg:p-10">
+              <p className="text-sm font-semibold uppercase tracking-[0.28em] text-amber-300">
+                Treatment focus
+              </p>
+              <h2 className="mt-4 font-display text-4xl leading-tight sm:text-5xl">
+                Care pathways patients commonly research before traveling.
+              </h2>
+              <div className="mt-8 grid gap-4">
+                {treatmentCategories.map((item) => (
+                  <div
+                    key={item.title}
+                    className="rounded-[1.4rem] border border-white/10 bg-white/5 p-5"
+                  >
+                    <h3 className="text-xl font-semibold text-white">{item.title}</h3>
+                    <p className="mt-2 text-sm leading-7 text-slate-300">{item.description}</p>
+                  </div>
+                ))}
+              </div>
+            </article>
+
+            <article
+              id="process"
+              className="rounded-[2rem] border border-[var(--line)] bg-[var(--surface)] p-8 lg:p-10"
+            >
+              <p className="text-sm font-semibold uppercase tracking-[0.28em] text-[var(--accent)]">
+                Medical travel guide
+              </p>
+              <h2 className="mt-4 font-display text-4xl leading-tight text-slate-950 sm:text-5xl">
+                What patients should know before choosing treatment in another country.
+              </h2>
+              <div className="mt-8 space-y-4">
+                {patientJourneyGuides.map((item, index) => (
+                  <div
+                    key={item.title}
+                    className="flex gap-4 rounded-[1.5rem] border border-[var(--line)] bg-white/80 p-5"
+                  >
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[var(--brand)] text-base font-semibold text-white">
+                      {index + 1}
+                    </div>
+                    <div className="pt-1">
+                      <h3 className="text-base font-semibold text-slate-900">{item.title}</h3>
+                      <p className="mt-2 text-sm leading-7 text-slate-700">{item.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-8 space-y-4 text-sm leading-7 text-[var(--muted)]">
+                {medicalTourismContent.map((item) => (
+                  <p key={item}>{item}</p>
+                ))}
+              </div>
+            </article>
+          </section>
+
+          <footer className="rounded-[2rem] border border-[var(--line)] bg-[var(--surface)] px-8 py-6 text-sm leading-7 text-[var(--muted)] lg:px-10">
+            TreatAxis helps patients plan treatment in India with clear hospital options, structured travel guidance, and practical post-treatment recovery support.
+          </footer>
+
+          <section
+            id="faq"
+            className="rounded-[2rem] border border-[var(--line)] bg-[var(--surface)] p-8 lg:p-10"
+          >
+            <p className="text-sm font-semibold uppercase tracking-[0.28em] text-[var(--accent)]">
+              FAQ
+            </p>
+            <h2 className="mt-4 font-display text-4xl leading-tight text-slate-950 sm:text-5xl">
+              Answers patients and families ask before medical travel.
+            </h2>
+            <div className="mt-8 grid gap-4 lg:grid-cols-2">
+              {faqItems.map((item) => (
+                <article
+                  key={item.question}
+                  className="rounded-[1.5rem] border border-[var(--line)] bg-white/80 p-6"
+                >
+                  <h3 className="text-xl font-semibold text-slate-900">{item.question}</h3>
+                  <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{item.answer}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+        </section>
+        <TreaChatWidget />
       </main>
-    </div>
+    </>
   );
 }

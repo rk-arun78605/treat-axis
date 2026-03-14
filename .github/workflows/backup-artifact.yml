@@ -1,0 +1,27 @@
+name: Backup Source Snapshot
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create source archive
+        run: |
+          mkdir -p backup
+          tar --exclude=.git --exclude=node_modules --exclude=.next -czf backup/treataxis-source.tgz .
+
+      - name: Upload backup artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: treataxis-source-${{ github.sha }}
+          path: backup/treataxis-source.tgz
+          retention-days: 30

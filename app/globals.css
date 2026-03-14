@@ -1,26 +1,102 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fbf7ef;
+  --foreground: #0f172a;
+  --surface: rgba(255, 255, 255, 0.72);
+  --surface-strong: rgba(255, 255, 255, 0.88);
+  --muted: #5b6475;
+  --line: rgba(15, 23, 42, 0.08);
+  --brand: #0f766e;
+  --brand-dark: #115e59;
+  --accent: #d97706;
+  --canvas: #fbf7ef;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-manrope);
+  --font-display: var(--font-cormorant);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(13, 148, 136, 0.18), transparent 32%),
+    radial-gradient(circle at 85% 15%, rgba(217, 119, 6, 0.14), transparent 24%),
+    linear-gradient(180deg, #fffdf7 0%, var(--canvas) 48%, #f6efe2 100%);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-manrope), sans-serif;
+}
+
+a {
+  color: inherit;
+}
+
+::selection {
+  background: rgba(13, 148, 136, 0.2);
+  color: var(--foreground);
+}
+
+@keyframes treaAiFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.trea-ai-fade-in {
+  animation: treaAiFadeIn 520ms ease-out both;
+}
+
+.trea-ai-panel {
+  position: relative;
+  isolation: isolate;
+}
+
+.trea-ai-panel::before,
+.trea-ai-panel::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  z-index: 0;
+  filter: blur(22px);
+}
+
+.trea-ai-panel::before {
+  top: -38px;
+  right: -28px;
+  width: 180px;
+  height: 180px;
+  border-radius: 999px;
+  background: rgba(13, 148, 136, 0.22);
+}
+
+.trea-ai-panel::after {
+  bottom: -44px;
+  left: -34px;
+  width: 210px;
+  height: 210px;
+  border-radius: 999px;
+  background: rgba(217, 119, 6, 0.16);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trea-ai-fade-in {
+    animation: none;
+  }
 }

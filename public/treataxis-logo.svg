@@ -1,0 +1,28 @@
+<svg width="220" height="220" viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">TreatAxis logo</title>
+  <desc id="desc">A compass-inspired healthcare logo with a cross and directional ring.</desc>
+  <defs>
+    <linearGradient id="bg" x1="30" y1="26" x2="186" y2="194" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0F766E"/>
+      <stop offset="1" stop-color="#115E59"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="70" y1="70" x2="158" y2="156" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FCD34D"/>
+      <stop offset="1" stop-color="#D97706"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="14" y="14" width="192" height="192" rx="46" fill="url(#bg)"/>
+
+  <circle cx="110" cy="110" r="62" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="8"/>
+  <circle cx="110" cy="110" r="40" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="5"/>
+
+  <path d="M110 56L127 90L110 84L93 90L110 56Z" fill="url(#accent)"/>
+  <path d="M110 164L93 130L110 136L127 130L110 164Z" fill="#EAB308"/>
+
+  <rect x="101" y="84" width="18" height="52" rx="6" fill="white"/>
+  <rect x="84" y="101" width="52" height="18" rx="6" fill="white"/>
+
+  <circle cx="110" cy="110" r="10" fill="#0F766E"/>
+  <circle cx="110" cy="110" r="5" fill="white"/>
+</svg>

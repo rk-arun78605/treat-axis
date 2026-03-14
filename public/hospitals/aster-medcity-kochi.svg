@@ -1,0 +1,11 @@
+<svg width="1200" height="700" viewBox="0 0 1200 700" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="700" fill="#ECFEFF"/>
+  <rect x="110" y="120" width="980" height="460" rx="26" fill="white" stroke="#0E7490" stroke-width="6"/>
+  <rect x="170" y="190" width="860" height="320" rx="18" fill="#CFFAFE"/>
+  <rect x="210" y="230" width="130" height="240" rx="10" fill="#99F6E4"/>
+  <rect x="360" y="230" width="130" height="240" rx="10" fill="#99F6E4"/>
+  <rect x="510" y="230" width="130" height="240" rx="10" fill="#99F6E4"/>
+  <rect x="660" y="230" width="130" height="240" rx="10" fill="#99F6E4"/>
+  <rect x="810" y="230" width="130" height="240" rx="10" fill="#99F6E4"/>
+  <text x="600" y="640" text-anchor="middle" fill="#0F172A" font-size="44" font-family="Arial, sans-serif" font-weight="700">Aster Medcity Kochi</text>
+</svg>
