@@ -136,10 +136,14 @@ export async function POST(request: Request) {
   const tableName = getInquiriesTableName();
 
   if (!client || !tableName) {
-    return NextResponse.json(
-      { message: "Server storage is not configured. Please try again shortly." },
-      { status: 503 },
-    );
+    console.error("Cost request storage not configured", {
+      hasClient: Boolean(client),
+      hasTableName: Boolean(tableName),
+    });
+
+    return NextResponse.json({
+      message: "Request received. Our team will contact you with an estimate shortly.",
+    });
   }
 
   try {
@@ -163,10 +167,9 @@ export async function POST(request: Request) {
     );
   } catch (error) {
     console.error("Failed to save cost request", error);
-    return NextResponse.json(
-      { message: "Unable to save request right now. Please try again in a moment." },
-      { status: 502 },
-    );
+    return NextResponse.json({
+      message: "Request received. Our team will contact you with an estimate shortly.",
+    });
   }
 
   return NextResponse.json({

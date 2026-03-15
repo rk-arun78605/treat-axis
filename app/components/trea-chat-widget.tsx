@@ -598,6 +598,17 @@ export function TreaChatWidget() {
     }
   }
 
+  function skipReportUpload() {
+    setReportStatus("Report upload skipped. You can share it later.");
+    setRequiresReportUpload(false);
+    finalizeOnboarding({
+      treatment: profile.treatment,
+      budgetRangeUsd: profile.budgetRangeUsd,
+      country: profile.country,
+      ageGroup: profile.ageGroup,
+    });
+  }
+
   return (
     <div className="fixed bottom-5 right-5 z-50 w-[calc(100%-2.5rem)] max-w-sm">
       {isOpen ? (
@@ -680,6 +691,14 @@ export function TreaChatWidget() {
                 className="mt-3 w-full rounded-xl bg-amber-400 px-3 py-2 text-sm font-semibold text-slate-900 disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {reportUploading ? "Uploading..." : "Upload report"}
+              </button>
+              <button
+                type="button"
+                onClick={skipReportUpload}
+                disabled={reportUploading}
+                className="mt-2 w-full rounded-xl border border-white/20 px-3 py-2 text-sm font-semibold text-slate-100 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                Skip upload for now
               </button>
               {reportStatus ? <p className="mt-2 text-xs text-slate-200">{reportStatus}</p> : null}
             </div>
