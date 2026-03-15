@@ -49,7 +49,7 @@ export function LeadForm({ className = "", compact = false }: LeadFormProps) {
         kind: "success",
         message:
           result.message ||
-          "Your inquiry has been received. A care coordinator can now review it.",
+          "Thank you. We have received your request and our care team will connect you within 24 hours with a hospital estimate and travel guidance.",
       });
       trackEvent("inquiry_submit_success", { location: "hero" });
     } catch (error) {
@@ -73,21 +73,22 @@ export function LeadForm({ className = "", compact = false }: LeadFormProps) {
   }
 
   return (
-    <aside
-      id="inquiry-form"
-      className={`rounded-[2rem] border border-[var(--line)] bg-slate-950 p-6 text-white shadow-[0_28px_100px_rgba(15,23,42,0.18)] md:p-8 ${className}`}
-    >
-      <p className="text-sm font-semibold uppercase tracking-[0.28em] text-amber-300">
-        Lead form
-      </p>
-      <h2 className={`mt-4 font-display leading-tight ${compact ? "text-3xl sm:text-4xl" : "text-4xl sm:text-5xl"}`}>
-        Request your treatment plan.
-      </h2>
-      <p className="mt-4 text-sm leading-7 text-slate-300">
-        This form is designed for medical tourism inquiries from patients, families, and coordinators planning treatment abroad.
-      </p>
+    <>
+      <aside
+        id="inquiry-form"
+        className={`rounded-[2rem] border border-[var(--line)] bg-slate-950 p-6 text-white shadow-[0_28px_100px_rgba(15,23,42,0.18)] md:p-8 ${className}`}
+      >
+        <p className="text-sm font-semibold uppercase tracking-[0.28em] text-amber-300">
+          Lead form
+        </p>
+        <h2 className={`mt-4 font-display leading-tight ${compact ? "text-3xl sm:text-4xl" : "text-4xl sm:text-5xl"}`}>
+          Request your treatment plan.
+        </h2>
+        <p className="mt-4 text-sm leading-7 text-slate-300">
+          This form is designed for medical tourism inquiries from patients, families, and coordinators planning treatment abroad.
+        </p>
 
-      <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
         <input
           type="text"
           name="company"
@@ -254,10 +255,38 @@ export function LeadForm({ className = "", compact = false }: LeadFormProps) {
           {submission.kind === "loading" ? "Submitting inquiry..." : "Submit inquiry"}
         </button>
 
-        <p aria-live="polite" className="min-h-6 text-sm text-slate-200">
-          {submission.message}
-        </p>
-      </form>
-    </aside>
+          <p aria-live="polite" className="min-h-6 text-sm text-slate-200">
+            {submission.kind === "error" ? submission.message : ""}
+          </p>
+        </form>
+      </aside>
+
+      {submission.kind === "success" ? (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/70 px-4">
+          <div className="relative w-full max-w-lg rounded-3xl border border-slate-200 bg-white p-7 shadow-[0_30px_90px_rgba(2,6,23,0.35)]">
+            <button
+              type="button"
+              aria-label="Close thank you message"
+              onClick={() => setSubmission(initialState)}
+              className="absolute right-4 top-4 inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
+            >
+              x
+            </button>
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-emerald-700">Thank you</p>
+            <h3 className="mt-3 text-2xl font-semibold text-slate-900">Your request has been submitted.</h3>
+            <p className="mt-3 text-sm leading-7 text-slate-700">
+              {submission.message || "We will connect you with suitable hospital options in the next 24 hours and share a treatment estimate with travel guidance."}
+            </p>
+            <button
+              type="button"
+              onClick={() => setSubmission(initialState)}
+              className="mt-6 w-full rounded-full bg-emerald-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-500"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      ) : null}
+    </>
   );
 }

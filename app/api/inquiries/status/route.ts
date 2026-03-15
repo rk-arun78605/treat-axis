@@ -32,9 +32,12 @@ export async function GET() {
     hubspotConfigured: Boolean(process.env.HUBSPOT_PRIVATE_APP_TOKEN),
   };
 
+  const dynamoInquiriesReady = config.appRegion && config.ddbInquiriesTableName;
+  const dynamoChatReady = config.appRegion && config.ddbChatTableName;
+
   const channelsDetected =
-    config.appRegion ||
-    config.ddbInquiriesTableName ||
+    dynamoInquiriesReady ||
+    dynamoChatReady ||
     config.leadWebhookUrl ||
     config.whatsappWebhookUrl ||
     config.googleSheetsWebhookUrl ||
@@ -47,6 +50,10 @@ export async function GET() {
     message: channelsDetected
       ? "At least one delivery channel configuration was detected."
       : "No delivery channels detected. Set app/db or webhook/email/CRM env vars.",
-    config,
+    config: {
+      ...config,
+      dynamoInquiriesReady,
+      dynamoChatReady,
+    },
   });
 }

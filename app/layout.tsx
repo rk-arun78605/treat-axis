@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, Manrope } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
+import Script from "next/script";
 import { africaCountries } from "../lib/africa-content";
 import { GlobalFloatingCta } from "./components/global-floating-cta";
 import "./globals.css";
@@ -79,6 +80,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${manrope.variable} ${cormorant.variable} antialiased`}>
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-GJ4X5Y1YJE"
+          strategy="afterInteractive"
+        />
+        <Script id="ga-gtag" strategy="afterInteractive">
+          {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-GJ4X5Y1YJE');`}
+        </Script>
         <header className="sticky top-0 z-50 border-b border-[var(--line)] bg-white/90 backdrop-blur">
           <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-3 px-6 py-3 lg:px-10">
             <Link
