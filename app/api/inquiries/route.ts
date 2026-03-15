@@ -61,7 +61,11 @@ function getAppRegion() {
 }
 
 function getInquiriesTableName() {
-  return process.env.DDB_INQUIRIES_TABLE_NAME || process.env.AWS_INQUIRIES_TABLE_NAME || "";
+  return (
+    process.env.DDB_INQUIRIES_TABLE_NAME ||
+    process.env.AWS_INQUIRIES_TABLE_NAME ||
+    "treataxis-inquiries-prod"
+  );
 }
 
 function shouldAutoCreateTables() {

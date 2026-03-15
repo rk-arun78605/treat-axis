@@ -34,7 +34,11 @@ function getAppRegion() {
 }
 
 function getInquiriesTableName() {
-  return process.env.DDB_INQUIRIES_TABLE_NAME || process.env.AWS_INQUIRIES_TABLE_NAME || "";
+  return (
+    process.env.DDB_INQUIRIES_TABLE_NAME ||
+    process.env.AWS_INQUIRIES_TABLE_NAME ||
+    "treataxis-inquiries-prod"
+  );
 }
 
 function shouldAutoCreateTables() {
@@ -131,7 +135,14 @@ export async function POST(request: Request) {
   const client = getDocClient();
   const tableName = getInquiriesTableName();
 
-  if (client && tableName) {
+  if (!client || !tableName) {
+    return NextResponse.json(
+      { message: "Server storage is not configured. Please try again shortly." },
+      { status: 503 },
+    );
+  }
+
+  try {
     await ensureInquiryTableExists();
     await client.send(
       new PutCommand({
@@ -149,6 +160,12 @@ export async function POST(request: Request) {
           submittedAt: new Date().toISOString(),
         },
       }),
+    );
+  } catch (error) {
+    console.error("Failed to save cost request", error);
+    return NextResponse.json(
+      { message: "Unable to save request right now. Please try again in a moment." },
+      { status: 502 },
     );
   }
 

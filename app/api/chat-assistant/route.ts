@@ -199,7 +199,11 @@ function getAppRegion() {
 }
 
 function getChatTableName() {
-  return process.env.DDB_CHAT_TABLE_NAME || process.env.AWS_CHAT_TABLE_NAME || "";
+  return (
+    process.env.DDB_CHAT_TABLE_NAME ||
+    process.env.AWS_CHAT_TABLE_NAME ||
+    "treataxis-chat-prod"
+  );
 }
 
 function shouldAutoCreateTables() {

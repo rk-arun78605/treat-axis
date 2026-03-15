@@ -10,14 +10,19 @@ export async function GET() {
       process.env.AWS_DEFAULT_REGION,
   );
 
+  const inquiriesTableName =
+    process.env.DDB_INQUIRIES_TABLE_NAME ||
+    process.env.AWS_INQUIRIES_TABLE_NAME ||
+    "treataxis-inquiries-prod";
+  const chatTableName =
+    process.env.DDB_CHAT_TABLE_NAME ||
+    process.env.AWS_CHAT_TABLE_NAME ||
+    "treataxis-chat-prod";
+
   const config = {
     appRegion: appRegionConfigured,
-    ddbInquiriesTableName: Boolean(
-      process.env.DDB_INQUIRIES_TABLE_NAME || process.env.AWS_INQUIRIES_TABLE_NAME,
-    ),
-    ddbChatTableName: Boolean(
-      process.env.DDB_CHAT_TABLE_NAME || process.env.AWS_CHAT_TABLE_NAME,
-    ),
+    ddbInquiriesTableName: Boolean(inquiriesTableName),
+    ddbChatTableName: Boolean(chatTableName),
     autoCreateDynamoTables: process.env.AUTO_CREATE_DYNAMO_TABLES === "true",
     perplexityConfigured: Boolean(process.env.PERPLEXITY_API_KEY),
     leadWebhookUrl: Boolean(process.env.LEAD_WEBHOOK_URL),
