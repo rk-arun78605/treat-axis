@@ -358,9 +358,7 @@ function buildFallbackMessage(payload: {
       payload.question
         ? `For your question: ${payload.question}`
         : "Please ask your main medical question in one sentence.",
-      missingOptionalPrompt
-        ? `Next: ${missingOptionalPrompt}`
-        : "No more basic details needed. Ask anything and I will answer in simple words.",
+      "No more basic details needed. Ask anything and I will answer in simple words.",
     ].join("\n");
   }
 
