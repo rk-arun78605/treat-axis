@@ -15,6 +15,14 @@ function getAppRegion() {
   );
 }
 
+function getReportsBucketName() {
+  return (
+    process.env.APP_REPORTS_BUCKET_NAME ||
+    process.env.REPORTS_BUCKET_NAME ||
+    "treataxis-reports-prod-011422533024"
+  );
+}
+
 export async function POST(request: Request) {
   const formData = await request.formData().catch(() => null);
 
@@ -38,7 +46,7 @@ export async function POST(request: Request) {
   }
 
   const region = getAppRegion();
-  const bucket = process.env.APP_REPORTS_BUCKET_NAME || "";
+  const bucket = getReportsBucketName();
 
   if (!region || !bucket) {
     return NextResponse.json({

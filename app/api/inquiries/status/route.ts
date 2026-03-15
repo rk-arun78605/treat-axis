@@ -2,6 +2,14 @@ import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 
+function getReportsBucketName() {
+  return (
+    process.env.APP_REPORTS_BUCKET_NAME ||
+    process.env.REPORTS_BUCKET_NAME ||
+    "treataxis-reports-prod-011422533024"
+  );
+}
+
 export async function GET() {
   const resolvedRegion =
     process.env.APP_REGION ||
@@ -19,7 +27,7 @@ export async function GET() {
     process.env.DDB_CHAT_TABLE_NAME ||
     process.env.AWS_CHAT_TABLE_NAME ||
     "treataxis-chat-prod";
-  const reportsBucket = process.env.APP_REPORTS_BUCKET_NAME || "";
+  const reportsBucket = getReportsBucketName();
 
   const config = {
     resolvedRegion,
