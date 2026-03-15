@@ -124,27 +124,27 @@ const dialCodeByRegion: Record<string, string> = {
   NG: "+234",
 };
 
-const dialCodeByCountryKeyword: Array<{ keyword: string; dialCode: string }> = [
-  { keyword: "india", dialCode: "+91" },
-  { keyword: "ghana", dialCode: "+233" },
-  { keyword: "nigeria", dialCode: "+234" },
-  { keyword: "kenya", dialCode: "+254" },
-  { keyword: "tanzania", dialCode: "+255" },
-  { keyword: "uganda", dialCode: "+256" },
-  { keyword: "ethiopia", dialCode: "+251" },
-  { keyword: "morocco", dialCode: "+212" },
-  { keyword: "egypt", dialCode: "+20" },
-  { keyword: "maldives", dialCode: "+960" },
-  { keyword: "uae", dialCode: "+971" },
-  { keyword: "united arab emirates", dialCode: "+971" },
-  { keyword: "saudi", dialCode: "+966" },
-  { keyword: "uk", dialCode: "+44" },
-  { keyword: "united kingdom", dialCode: "+44" },
-  { keyword: "usa", dialCode: "+1" },
-  { keyword: "united states", dialCode: "+1" },
-  { keyword: "canada", dialCode: "+1" },
-  { keyword: "australia", dialCode: "+61" },
-];
+const dialCodeByCountryName: Record<string, string> = {
+  india: "+91",
+  ghana: "+233",
+  nigeria: "+234",
+  kenya: "+254",
+  tanzania: "+255",
+  uganda: "+256",
+  ethiopia: "+251",
+  morocco: "+212",
+  egypt: "+20",
+  maldives: "+960",
+  "united states": "+1",
+  usa: "+1",
+  canada: "+1",
+  uk: "+44",
+  "united kingdom": "+44",
+  uae: "+971",
+  "united arab emirates": "+971",
+  "saudi arabia": "+966",
+  australia: "+61",
+};
 
 function detectDialCode() {
   if (typeof navigator === "undefined") {
@@ -175,15 +175,24 @@ function normalizeWhatsappNumber(raw: string, dialCode: string) {
   return `${dialCode}${local}`;
 }
 
-function inferDialCodeFromCountry(country: string, fallbackDialCode: string) {
-  const normalized = country.toLowerCase();
-  const match = dialCodeByCountryKeyword.find((item) => normalized.includes(item.keyword));
-  return match?.dialCode || fallbackDialCode;
+function getDialCodeFromCountry(country: string) {
+  return dialCodeByCountryName[country.trim().toLowerCase()] || "";
 }
 
-function extractPhoneLikeText(raw: string) {
-  const match = raw.match(/(\+?\d[\d\s().-]{6,}\d)/);
-  return match ? match[1] : "";
+function withDialCode(phone: string, dialCode: string) {
+  const digits = phone.replace(/\D/g, "");
+  const dialDigits = dialCode.replace(/\D/g, "");
+
+  if (!digits || !dialDigits) {
+    return phone;
+  }
+
+  if (digits.startsWith(dialDigits)) {
+    return `+${digits}`;
+  }
+
+  const local = digits.startsWith("0") ? digits.slice(1) : digits;
+  return `${dialCode}${local}`;
 }
 
 export function TreaChatWidget() {
@@ -195,6 +204,7 @@ export function TreaChatWidget() {
   const [currentStep, setCurrentStep] = useState(0);
   const [careOptions, setCareOptions] = useState<CareOption[]>([]);
   const [detectedDialCode, setDetectedDialCode] = useState("+1");
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const [profile, setProfile] = useState({
     whatsappNumber: "",
     careTier: "",
@@ -206,7 +216,6 @@ export function TreaChatWidget() {
     reportsAvailable: "",
     attendantRequired: "",
   });
-  const messagesContainerRef = useRef<HTMLDivElement | null>(null);
 
   const currentStepConfig =
     currentStep < onboardingSteps.length ? onboardingSteps[currentStep] : undefined;
@@ -217,12 +226,12 @@ export function TreaChatWidget() {
   }, []);
 
   useEffect(() => {
-    if (!isOpen || !messagesContainerRef.current) {
+    if (!isOpen) {
       return;
     }
 
-    messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
-  }, [messages, isLoading, isOpen]);
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [messages, isLoading, careOptions, currentStep, isOpen]);
 
   const canSend = useMemo(() => input.trim().length > 0 && !isLoading, [input, isLoading]);
 
@@ -252,12 +261,47 @@ export function TreaChatWidget() {
 
       setProfile((previous) => {
         if (step.field === "whatsappNumber") {
-          const countryBasedDialCode = inferDialCodeFromCountry(previous.country, detectedDialCode);
+          const normalizedWhatsapp = isSkip
+            ? ""
+            : normalizeWhatsappNumber(normalizedAnswer, detectedDialCode);
+          const digitsCount = normalizedWhatsapp.replace(/\D/g, "").length;
+
+          if (!normalizedWhatsapp || digitsCount < 8) {
+            setMessages((prev) => [
+              ...prev,
+              {
+                role: "assistant",
+                text: "Please share a valid WhatsApp number once. You can type only digits.",
+              },
+            ]);
+            return previous;
+          }
+
           return {
             ...previous,
-            whatsappNumber: isSkip
-              ? ""
-              : normalizeWhatsappNumber(normalizedAnswer, countryBasedDialCode),
+            whatsappNumber: normalizedWhatsapp,
+          };
+        }
+
+        if (step.field === "country") {
+          const countryValue = isSkip ? "" : normalizedAnswer;
+          const countryDialCode = getDialCodeFromCountry(countryValue);
+
+          if (!countryDialCode || !previous.whatsappNumber) {
+            return {
+              ...previous,
+              country: countryValue,
+            };
+          }
+
+          const updatedWhatsapp = previous.whatsappNumber.startsWith(detectedDialCode)
+            ? withDialCode(previous.whatsappNumber, countryDialCode)
+            : previous.whatsappNumber;
+
+          return {
+            ...previous,
+            country: countryValue,
+            whatsappNumber: updatedWhatsapp,
           };
         }
 
@@ -273,6 +317,16 @@ export function TreaChatWidget() {
       });
 
       const nextStep = currentStep + 1;
+
+      if (step.field === "whatsappNumber") {
+        const normalizedWhatsapp = normalizeWhatsappNumber(normalizedAnswer, detectedDialCode);
+        const digitsCount = normalizedWhatsapp.replace(/\D/g, "").length;
+
+        if (!normalizedWhatsapp || digitsCount < 8) {
+          return;
+        }
+      }
+
       setCurrentStep(nextStep);
 
       if (nextStep < onboardingSteps.length) {
@@ -296,21 +350,6 @@ export function TreaChatWidget() {
     setIsLoading(true);
     trackEvent("chat_query_submitted", { source: "trea-widget" });
 
-    const fallbackDialCode = inferDialCodeFromCountry(profile.country, detectedDialCode);
-    const extractedPhone = extractPhoneLikeText(question);
-    const normalizedProfile = {
-      ...profile,
-      whatsappNumber: profile.whatsappNumber
-        ? normalizeWhatsappNumber(profile.whatsappNumber, fallbackDialCode)
-        : extractedPhone
-          ? normalizeWhatsappNumber(extractedPhone, fallbackDialCode)
-          : "",
-    };
-
-    if (normalizedProfile.whatsappNumber !== profile.whatsappNumber) {
-      setProfile(normalizedProfile);
-    }
-
     try {
       const response = await fetch("/api/chat-assistant", {
         method: "POST",
@@ -320,7 +359,7 @@ export function TreaChatWidget() {
         body: JSON.stringify({
           sessionId,
           message: question,
-          profile: normalizedProfile,
+          profile,
         }),
       });
 
@@ -404,7 +443,7 @@ export function TreaChatWidget() {
             </button>
           </div>
 
-          <div ref={messagesContainerRef} className="mt-3 max-h-[65vh] space-y-2 overflow-y-auto rounded-xl border border-white/10 bg-white/5 p-3">
+          <div className="mt-3 max-h-56 space-y-2 overflow-y-auto rounded-xl border border-white/10 bg-white/5 p-3">
             {messages.map((message, index) => (
               <div
                 key={`${message.role}-${index}`}
@@ -416,6 +455,7 @@ export function TreaChatWidget() {
               </div>
             ))}
             {isLoading ? <p className="text-xs text-slate-400">TREA is preparing your answer...</p> : null}
+            <div ref={messagesEndRef} />
           </div>
 
           {currentStep < onboardingSteps.length && stepChoices.length > 0 ? (

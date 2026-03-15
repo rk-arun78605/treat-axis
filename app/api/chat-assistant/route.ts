@@ -317,6 +317,10 @@ function buildFallbackMessage(payload: {
   attendantRequired: string;
   question: string;
 }) {
+  if (!payload.whatsappNumber) {
+    return "Please share your WhatsApp number only.";
+  }
+
   if (!payload.budgetRangeUsd) {
     return "What is your budget in USD?";
   }
@@ -356,7 +360,6 @@ function buildFallbackMessage(payload: {
       "Understood. I will keep this simple.",
       `Selected option: ${tierLabel} hospitals in India.`,
       `Need: ${treatment}. Budget: ${budget}. Country: ${country}. Age: ${ageGroup}.`,
-      payload.whatsappNumber ? "" : "If you want callback support, share your WhatsApp number with country code any time.",
       payload.question
         ? `For your question: ${payload.question}`
         : "Please ask your main medical question in one sentence.",
@@ -369,7 +372,6 @@ function buildFallbackMessage(payload: {
   return [
     "I understand this can feel stressful. I will guide you step by step.",
     `Need: ${treatment}. Budget: ${budget}. Country: ${country}. Age: ${ageGroup}.`,
-    payload.whatsappNumber ? "" : "If you want callback support, share your WhatsApp number with country code any time.",
     "Please choose hospital type using the options shown below.",
     payload.question
       ? `For your question: ${payload.question}`
@@ -452,8 +454,14 @@ async function generateAssistantMessage(input: {
     output = output.replace(/\b(what month do you want to travel\?|expected travel month\??|share your expected travel month\.?)/gi, "");
   }
 
+  if (input.whatsappNumber) {
+    output = output.replace(/\b(please\s+share\s+your\s+whatsapp\s+number\s+only\.?)/gi, "");
+  }
+
   output = output.replace(/India has 3 practical options:[\s\S]*?(premium hospitals\.?)/i, "");
   output = output.replace(/1\.\s*Low-cost hospitals[\s\S]*?3\.\s*Premium hospitals\.?/i, "");
+
+  output = output.replace(/\n{3,}/g, "\n\n");
 
   return output.trim();
 }
