@@ -124,6 +124,8 @@ export async function POST(request: Request) {
   const state = normalizeString(body.state);
   const city = normalizeString(body.city);
   const hospital = normalizeString(body.hospital);
+  const inquiryId = crypto.randomUUID();
+  const resolvedRegion = getAppRegion();
 
   if (!phone || !hospital) {
     return NextResponse.json(
@@ -139,11 +141,21 @@ export async function POST(request: Request) {
     console.error("Cost request storage not configured", {
       hasClient: Boolean(client),
       hasTableName: Boolean(tableName),
+      resolvedRegion,
+      resolvedTableName: tableName,
     });
 
-    return NextResponse.json({
-      message: "Request received. Our team will contact you with an estimate shortly.",
-    });
+    return NextResponse.json(
+      {
+        message:
+          "Storage is not configured. Please set APP_REGION and DDB_INQUIRIES_TABLE_NAME in Amplify.",
+        inquiryId,
+        saved: false,
+        resolvedRegion,
+        resolvedTableName: tableName,
+      },
+      { status: 503 },
+    );
   }
 
   try {
@@ -152,7 +164,7 @@ export async function POST(request: Request) {
       new PutCommand({
         TableName: tableName,
         Item: {
-          inquiryId: crypto.randomUUID(),
+          inquiryId,
           requestType: "cost-request",
           phone,
           promptId,
@@ -166,13 +178,31 @@ export async function POST(request: Request) {
       }),
     );
   } catch (error) {
-    console.error("Failed to save cost request", error);
-    return NextResponse.json({
-      message: "Request received. Our team will contact you with an estimate shortly.",
+    const reason = error instanceof Error ? error.message : "Unknown DynamoDB write failure.";
+    console.error("Failed to save cost request", {
+      reason,
+      inquiryId,
+      tableName,
+      resolvedRegion,
     });
+
+    return NextResponse.json(
+      {
+        message: `Unable to save your request right now. ${reason}`,
+        inquiryId,
+        saved: false,
+        resolvedRegion,
+        resolvedTableName: tableName,
+      },
+      { status: 502 },
+    );
   }
 
   return NextResponse.json({
-    message: "Cost request received. TREA team can contact you with the exact estimate.",
+    message: "Cost request saved. TREA team can contact you with the exact estimate.",
+    inquiryId,
+    saved: true,
+    resolvedRegion,
+    resolvedTableName: tableName,
   });
 }
