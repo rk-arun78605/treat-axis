@@ -317,10 +317,6 @@ function buildFallbackMessage(payload: {
   attendantRequired: string;
   question: string;
 }) {
-  if (!payload.whatsappNumber) {
-    return "Please share your WhatsApp number only.";
-  }
-
   if (!payload.budgetRangeUsd) {
     return "What is your budget in USD?";
   }
@@ -360,6 +356,7 @@ function buildFallbackMessage(payload: {
       "Understood. I will keep this simple.",
       `Selected option: ${tierLabel} hospitals in India.`,
       `Need: ${treatment}. Budget: ${budget}. Country: ${country}. Age: ${ageGroup}.`,
+      payload.whatsappNumber ? "" : "If you want callback support, share your WhatsApp number with country code any time.",
       payload.question
         ? `For your question: ${payload.question}`
         : "Please ask your main medical question in one sentence.",
@@ -372,6 +369,7 @@ function buildFallbackMessage(payload: {
   return [
     "I understand this can feel stressful. I will guide you step by step.",
     `Need: ${treatment}. Budget: ${budget}. Country: ${country}. Age: ${ageGroup}.`,
+    payload.whatsappNumber ? "" : "If you want callback support, share your WhatsApp number with country code any time.",
     "Please choose hospital type using the options shown below.",
     payload.question
       ? `For your question: ${payload.question}`

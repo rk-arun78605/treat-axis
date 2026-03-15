@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { trackEvent } from "../../lib/analytics";
 
 type Message = {
@@ -124,6 +124,28 @@ const dialCodeByRegion: Record<string, string> = {
   NG: "+234",
 };
 
+const dialCodeByCountryKeyword: Array<{ keyword: string; dialCode: string }> = [
+  { keyword: "india", dialCode: "+91" },
+  { keyword: "ghana", dialCode: "+233" },
+  { keyword: "nigeria", dialCode: "+234" },
+  { keyword: "kenya", dialCode: "+254" },
+  { keyword: "tanzania", dialCode: "+255" },
+  { keyword: "uganda", dialCode: "+256" },
+  { keyword: "ethiopia", dialCode: "+251" },
+  { keyword: "morocco", dialCode: "+212" },
+  { keyword: "egypt", dialCode: "+20" },
+  { keyword: "maldives", dialCode: "+960" },
+  { keyword: "uae", dialCode: "+971" },
+  { keyword: "united arab emirates", dialCode: "+971" },
+  { keyword: "saudi", dialCode: "+966" },
+  { keyword: "uk", dialCode: "+44" },
+  { keyword: "united kingdom", dialCode: "+44" },
+  { keyword: "usa", dialCode: "+1" },
+  { keyword: "united states", dialCode: "+1" },
+  { keyword: "canada", dialCode: "+1" },
+  { keyword: "australia", dialCode: "+61" },
+];
+
 function detectDialCode() {
   if (typeof navigator === "undefined") {
     return "+1";
@@ -153,6 +175,17 @@ function normalizeWhatsappNumber(raw: string, dialCode: string) {
   return `${dialCode}${local}`;
 }
 
+function inferDialCodeFromCountry(country: string, fallbackDialCode: string) {
+  const normalized = country.toLowerCase();
+  const match = dialCodeByCountryKeyword.find((item) => normalized.includes(item.keyword));
+  return match?.dialCode || fallbackDialCode;
+}
+
+function extractPhoneLikeText(raw: string) {
+  const match = raw.match(/(\+?\d[\d\s().-]{6,}\d)/);
+  return match ? match[1] : "";
+}
+
 export function TreaChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -173,6 +206,7 @@ export function TreaChatWidget() {
     reportsAvailable: "",
     attendantRequired: "",
   });
+  const messagesContainerRef = useRef<HTMLDivElement | null>(null);
 
   const currentStepConfig =
     currentStep < onboardingSteps.length ? onboardingSteps[currentStep] : undefined;
@@ -181,6 +215,14 @@ export function TreaChatWidget() {
   useEffect(() => {
     setDetectedDialCode(detectDialCode());
   }, []);
+
+  useEffect(() => {
+    if (!isOpen || !messagesContainerRef.current) {
+      return;
+    }
+
+    messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+  }, [messages, isLoading, isOpen]);
 
   const canSend = useMemo(() => input.trim().length > 0 && !isLoading, [input, isLoading]);
 
@@ -210,11 +252,12 @@ export function TreaChatWidget() {
 
       setProfile((previous) => {
         if (step.field === "whatsappNumber") {
+          const countryBasedDialCode = inferDialCodeFromCountry(previous.country, detectedDialCode);
           return {
             ...previous,
             whatsappNumber: isSkip
               ? ""
-              : normalizeWhatsappNumber(normalizedAnswer, detectedDialCode),
+              : normalizeWhatsappNumber(normalizedAnswer, countryBasedDialCode),
           };
         }
 
@@ -253,6 +296,21 @@ export function TreaChatWidget() {
     setIsLoading(true);
     trackEvent("chat_query_submitted", { source: "trea-widget" });
 
+    const fallbackDialCode = inferDialCodeFromCountry(profile.country, detectedDialCode);
+    const extractedPhone = extractPhoneLikeText(question);
+    const normalizedProfile = {
+      ...profile,
+      whatsappNumber: profile.whatsappNumber
+        ? normalizeWhatsappNumber(profile.whatsappNumber, fallbackDialCode)
+        : extractedPhone
+          ? normalizeWhatsappNumber(extractedPhone, fallbackDialCode)
+          : "",
+    };
+
+    if (normalizedProfile.whatsappNumber !== profile.whatsappNumber) {
+      setProfile(normalizedProfile);
+    }
+
     try {
       const response = await fetch("/api/chat-assistant", {
         method: "POST",
@@ -262,7 +320,7 @@ export function TreaChatWidget() {
         body: JSON.stringify({
           sessionId,
           message: question,
-          profile,
+          profile: normalizedProfile,
         }),
       });
 
@@ -346,7 +404,7 @@ export function TreaChatWidget() {
             </button>
           </div>
 
-          <div className="mt-3 max-h-56 space-y-2 overflow-y-auto rounded-xl border border-white/10 bg-white/5 p-3">
+          <div ref={messagesContainerRef} className="mt-3 max-h-[65vh] space-y-2 overflow-y-auto rounded-xl border border-white/10 bg-white/5 p-3">
             {messages.map((message, index) => (
               <div
                 key={`${message.role}-${index}`}
