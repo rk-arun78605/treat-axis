@@ -25,6 +25,7 @@ export async function GET() {
     resolvedRegion,
     resolvedInquiriesTableName: inquiriesTableName,
     resolvedChatTableName: chatTableName,
+    resolvedReportsBucketName: reportsBucket,
     reportUploadConfigured: Boolean(reportsBucket && resolvedRegion),
     appRegion: appRegionConfigured,
     ddbInquiriesTableName: Boolean(inquiriesTableName),
