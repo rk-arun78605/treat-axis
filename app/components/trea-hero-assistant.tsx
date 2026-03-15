@@ -170,6 +170,10 @@ export function TreaHeroAssistant() {
     () => promptSuggestions.find((item) => item.id === selectedPromptId) || null,
     [selectedPromptId],
   );
+  const activeCostOption = useMemo(
+    () => itineraryOptions.find((item) => item.id === costRequest.openForId) || null,
+    [costRequest.openForId, itineraryOptions],
+  );
 
   function inferIllnessCategory(query: string) {
     const normalized = query.toLowerCase();
@@ -631,70 +635,6 @@ export function TreaHeroAssistant() {
                           Check price
                         </button>
 
-                        {costRequest.openForId === option.id ? (
-                          <div className="absolute inset-x-3 bottom-3 z-20 rounded-xl border border-white/15 bg-slate-900/95 p-3 shadow-[0_16px_40px_rgba(2,6,23,0.55)] backdrop-blur">
-                            <p className="text-[10px] uppercase tracking-[0.16em] text-amber-300">{option.location}</p>
-                            <p className="mt-1 text-xs font-semibold text-white">Share mobile number for exact estimate</p>
-
-                            <div className="mt-2 grid gap-2 sm:grid-cols-[0.45fr_0.55fr]">
-                              <select
-                                value={costRequest.countryCode}
-                                onChange={(event) =>
-                                  setCostRequest((previous) => ({
-                                    ...previous,
-                                    countryCode: event.target.value,
-                                  }))
-                                }
-                                className="rounded-lg border border-white/10 bg-slate-950 px-2 py-2 text-xs text-white outline-none"
-                              >
-                                {countryCodes.map((code) => (
-                                  <option key={code} value={code}>
-                                    {code}
-                                  </option>
-                                ))}
-                              </select>
-                              <input
-                                value={costRequest.phone}
-                                onChange={(event) =>
-                                  setCostRequest((previous) => ({
-                                    ...previous,
-                                    phone: event.target.value,
-                                  }))
-                                }
-                                placeholder="Mobile number"
-                                className="rounded-lg border border-white/10 bg-slate-950 px-2 py-2 text-xs text-white outline-none placeholder:text-slate-500"
-                              />
-                            </div>
-
-                            <div className="mt-2 flex gap-2">
-                              <button
-                                type="button"
-                                disabled={costRequest.submitting}
-                                onClick={() => void submitCostRequest(option)}
-                                className="flex-1 rounded-lg bg-amber-300 px-3 py-2 text-xs font-semibold text-slate-950 disabled:cursor-not-allowed disabled:opacity-70"
-                              >
-                                {costRequest.submitting ? "Submitting..." : "Send me the cost"}
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  setCostRequest((previous) => ({
-                                    ...previous,
-                                    openForId: null,
-                                    message: "",
-                                  }))
-                                }
-                                className="rounded-lg border border-white/20 px-3 py-2 text-xs font-semibold text-slate-200"
-                              >
-                                Close
-                              </button>
-                            </div>
-
-                            {costRequest.message ? (
-                              <p className="mt-2 text-xs text-emerald-200">{costRequest.message}</p>
-                            ) : null}
-                          </div>
-                        ) : null}
                       </div>
                     </article>
                   );
@@ -757,9 +697,84 @@ export function TreaHeroAssistant() {
         </div>
       </div>
 
-      {costRequest.message && !costRequest.openForId ? (
-        <div className="mt-4 rounded-xl border border-emerald-300/30 bg-emerald-300/10 p-3">
-          <p className="text-sm text-emerald-100">{costRequest.message}</p>
+      {activeCostOption ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4" role="dialog" aria-modal="true">
+          <div className="w-full max-w-md rounded-[1.4rem] border border-white/15 bg-slate-900 p-5 shadow-[0_20px_80px_rgba(2,6,23,0.65)]">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-xs uppercase tracking-[0.2em] text-amber-300">{activeCostOption.location}</p>
+                <h3 className="mt-2 text-lg font-semibold text-white">Share mobile number to receive exact cost range</h3>
+                <p className="mt-2 text-sm text-slate-300">{activeCostOption.hospital}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() =>
+                  setCostRequest((previous) => ({
+                    ...previous,
+                    openForId: null,
+                    message: "",
+                  }))
+                }
+                className="rounded-full border border-white/20 px-3 py-1 text-xs font-semibold text-slate-200 transition hover:border-white/40"
+              >
+                Close
+              </button>
+            </div>
+
+            <div className="mt-4 grid gap-3 sm:grid-cols-[0.42fr_0.58fr]">
+              <select
+                value={costRequest.countryCode}
+                onChange={(event) =>
+                  setCostRequest((previous) => ({
+                    ...previous,
+                    countryCode: event.target.value,
+                  }))
+                }
+                className="rounded-xl border border-white/10 bg-slate-950 px-3 py-3 text-sm text-white outline-none"
+              >
+                {countryCodes.map((code) => (
+                  <option key={code} value={code}>
+                    {code}
+                  </option>
+                ))}
+              </select>
+              <input
+                value={costRequest.phone}
+                onChange={(event) =>
+                  setCostRequest((previous) => ({
+                    ...previous,
+                    phone: event.target.value,
+                  }))
+                }
+                placeholder="Mobile number"
+                className="rounded-xl border border-white/10 bg-slate-950 px-3 py-3 text-sm text-white outline-none placeholder:text-slate-500"
+              />
+            </div>
+
+            <button
+              type="button"
+              disabled={costRequest.submitting}
+              onClick={() => void submitCostRequest(activeCostOption)}
+              className="mt-3 w-full rounded-xl bg-amber-300 px-4 py-3 text-sm font-semibold text-slate-950 disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              {costRequest.submitting ? "Submitting..." : "Send me the cost"}
+            </button>
+
+            {costRequest.message ? (
+              <div className="mt-3 rounded-xl border border-emerald-300/25 bg-emerald-300/10 p-3">
+                <p className="text-sm text-emerald-200">{costRequest.message}</p>
+                <p className="mt-2 text-xs uppercase tracking-[0.15em] text-emerald-100/90">Estimated cost range for this illness</p>
+                <div className="mt-2 space-y-2">
+                  {itineraryOptions.map((item) => (
+                    <div key={item.id} className="flex items-center justify-between gap-2 rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-xs">
+                      <span className="font-semibold text-slate-100">{item.location}</span>
+                      <span className="text-emerald-100">{item.estimatedCostRange}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+          </div>
         </div>
       ) : null}
     </section>
