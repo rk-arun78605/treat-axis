@@ -19,6 +19,14 @@ type CostRequestPayload = {
   hospital?: unknown;
 };
 
+type CostRequestResponse = {
+  message: string;
+  inquiryId?: string;
+  saved?: boolean;
+  resolvedRegion?: string;
+  resolvedTableName?: string;
+};
+
 function normalizeString(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
 }
@@ -115,7 +123,8 @@ export async function POST(request: Request) {
   const body = (await request.json().catch(() => null)) as CostRequestPayload | null;
 
   if (!body) {
-    return NextResponse.json({ message: "Invalid cost request." }, { status: 400 });
+    const response: CostRequestResponse = { message: "Invalid cost request." };
+    return NextResponse.json(response, { status: 400 });
   }
 
   const phone = normalizeString(body.phone);
@@ -128,10 +137,10 @@ export async function POST(request: Request) {
   const resolvedRegion = getAppRegion();
 
   if (!phone || !hospital) {
-    return NextResponse.json(
-      { message: "Phone number and hospital are required." },
-      { status: 400 },
-    );
+    const response: CostRequestResponse = {
+      message: "Phone number and hospital are required.",
+    };
+    return NextResponse.json(response, { status: 400 });
   }
 
   const client = getDocClient();
@@ -145,17 +154,16 @@ export async function POST(request: Request) {
       resolvedTableName: tableName,
     });
 
-    return NextResponse.json(
-      {
-        message:
-          "Storage is not configured. Please set APP_REGION and DDB_INQUIRIES_TABLE_NAME in Amplify.",
-        inquiryId,
-        saved: false,
-        resolvedRegion,
-        resolvedTableName: tableName,
-      },
-      { status: 503 },
-    );
+    const response: CostRequestResponse = {
+      message:
+        "Storage is not configured. Please set APP_REGION and DDB_INQUIRIES_TABLE_NAME in Amplify.",
+      inquiryId,
+      saved: false,
+      resolvedRegion,
+      resolvedTableName: tableName,
+    };
+
+    return NextResponse.json(response, { status: 503 });
   }
 
   try {
@@ -186,23 +194,24 @@ export async function POST(request: Request) {
       resolvedRegion,
     });
 
-    return NextResponse.json(
-      {
-        message: `Unable to save your request right now. ${reason}`,
-        inquiryId,
-        saved: false,
-        resolvedRegion,
-        resolvedTableName: tableName,
-      },
-      { status: 502 },
-    );
+    const response: CostRequestResponse = {
+      message: `Unable to save your request right now. ${reason}`,
+      inquiryId,
+      saved: false,
+      resolvedRegion,
+      resolvedTableName: tableName,
+    };
+
+    return NextResponse.json(response, { status: 502 });
   }
 
-  return NextResponse.json({
+  const response: CostRequestResponse = {
     message: "Cost request saved. TREA team can contact you with the exact estimate.",
     inquiryId,
     saved: true,
     resolvedRegion,
     resolvedTableName: tableName,
-  });
+  };
+
+  return NextResponse.json(response);
 }
