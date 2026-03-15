@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Script from "next/script";
 import { TreaHeroAssistant } from "./components/trea-hero-assistant";
 import { TreaChatWidget } from "./components/trea-chat-widget";
 import { destinations, treatments } from "../lib/seo-content";
@@ -116,11 +115,30 @@ const medicalTourismContent = [
 ];
 
 export const metadata: Metadata = {
-  title: "Plan Treatment Abroad With Confidence",
+  title: "Medical Tourism in India | TreatAxis Care Planning",
   description:
-    "TreatAxis helps patients plan treatment abroad with confidence using clear medical tourism guidance, hospital comparisons, and a direct inquiry flow.",
+    "Plan treatment in India with hospital comparisons, visa guidance, and recovery support built for international patients.",
   alternates: {
     canonical: "/",
+    languages: {
+      "en": "/",
+      "en-US": "/",
+      "en-GB": "/",
+      "x-default": "/",
+    },
+  },
+  openGraph: {
+    title: "Medical Tourism in India | TreatAxis Care Planning",
+    description:
+      "Plan treatment in India with hospital comparisons, visa guidance, and recovery support built for international patients.",
+    url: "https://www.treataxis.com",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Medical Tourism in India | TreatAxis Care Planning",
+    description:
+      "Plan treatment in India with hospital comparisons, visa guidance, and recovery support built for international patients.",
   },
 };
 
@@ -167,11 +185,11 @@ const schema = {
 export default function Home() {
   return (
     <>
-      <Script
-        id="treataxis-schema"
+      <script
         type="application/ld+json"
+        suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-      />
+      ></script>
       <main className="relative overflow-hidden">
         <div className="absolute inset-x-0 top-0 -z-10 h-[36rem] bg-[radial-gradient(circle_at_top,rgba(15,118,110,0.18),transparent_48%)]" />
 
@@ -187,7 +205,7 @@ export default function Home() {
                 Plan treatment abroad with confidence
               </p>
               <h1 className="mt-5 max-w-4xl font-display text-5xl leading-none text-slate-950 sm:text-6xl lg:text-7xl">
-                Medical tourism planning for hospitals, visa, stay, and recovery in India.
+                Plan medical travel to India with clarity and confidence.
               </h1>
               <p className="mt-6 max-w-3xl text-lg leading-8 text-[var(--muted)] sm:text-xl">
                 TreatAxis helps patients from Africa and Maldives compare treatment pathways in India with hospital guidance, visa direction, hotel planning, food support, and realistic post-treatment recovery timelines.

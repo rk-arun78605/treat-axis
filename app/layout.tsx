@@ -1,10 +1,11 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Manrope } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
 import Script from "next/script";
 import { africaCountries } from "../lib/africa-content";
 import { GlobalFloatingCta } from "./components/global-floating-cta";
+import { WebVitalsReporter } from "./components/web-vitals-reporter";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -47,6 +48,12 @@ export const metadata: Metadata = {
   applicationName: siteName,
   alternates: {
     canonical: "/",
+    languages: {
+      "en": "/",
+      "en-US": "/",
+      "en-GB": "/",
+      "x-default": "/",
+    },
   },
   openGraph: {
     type: "website",
@@ -77,6 +84,12 @@ export const metadata: Metadata = {
   manifest: "/manifest.webmanifest",
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -87,14 +100,15 @@ export default function RootLayout({
       <body className={`${manrope.variable} ${cormorant.variable} antialiased`}>
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-GJ4X5Y1YJE"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
-        <Script id="ga-gtag" strategy="afterInteractive">
+        <Script id="ga-gtag" strategy="lazyOnload">
           {`window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'G-GJ4X5Y1YJE');`}
         </Script>
+        <WebVitalsReporter />
         <header className="sticky top-0 z-50 border-b border-[var(--line)] bg-white/90 backdrop-blur">
           <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-3 px-6 py-3 lg:px-10">
             <Link
@@ -107,12 +121,12 @@ gtag('config', 'G-GJ4X5Y1YJE');`}
                 TreatAxis
               </span>
             </Link>
-            <nav className="flex flex-wrap items-center gap-4 text-sm font-semibold text-slate-700">
-              <Link href="/#why-treataxis" className="transition hover:text-[var(--brand)]">Why TreatAxis</Link>
-              <Link href="/treatments" className="transition hover:text-[var(--brand)]">Treatments</Link>
-              <Link href="/doctors" className="transition hover:text-[var(--brand)]">Doctors</Link>
+            <nav className="flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-700 sm:gap-3">
+              <Link href="/#why-treataxis" className="rounded-full px-3 py-2 transition hover:text-[var(--brand)]">Why TreatAxis</Link>
+              <Link href="/treatments" className="rounded-full px-3 py-2 transition hover:text-[var(--brand)]">Treatments</Link>
+              <Link href="/doctors" className="rounded-full px-3 py-2 transition hover:text-[var(--brand)]">Doctors</Link>
               <div className="group relative">
-                <Link href="/africa" className="inline-flex items-center gap-1 transition hover:text-[var(--brand)]">
+                <Link href="/africa" className="inline-flex items-center gap-1 rounded-full px-3 py-2 transition hover:text-[var(--brand)]">
                   Africa
                   <span aria-hidden="true" className="text-xs">▾</span>
                 </Link>
@@ -130,9 +144,9 @@ gtag('config', 'G-GJ4X5Y1YJE');`}
                   </div>
                 </div>
               </div>
-              <Link href="/destinations" className="transition hover:text-[var(--brand)]">Destinations</Link>
-              <Link href="/#process" className="transition hover:text-[var(--brand)]">How it works</Link>
-              <Link href="/#faq" className="transition hover:text-[var(--brand)]">FAQ</Link>
+              <Link href="/destinations" className="rounded-full px-3 py-2 transition hover:text-[var(--brand)]">Destinations</Link>
+              <Link href="/#process" className="rounded-full px-3 py-2 transition hover:text-[var(--brand)]">How it works</Link>
+              <Link href="/#faq" className="rounded-full px-3 py-2 transition hover:text-[var(--brand)]">FAQ</Link>
             </nav>
           </div>
         </header>
@@ -161,9 +175,18 @@ gtag('config', 'G-GJ4X5Y1YJE');`}
           </div>
         </section>
         <footer className="mx-auto w-full max-w-7xl px-6 py-6 lg:px-10">
-          <p className="rounded-xl border border-[var(--line)] bg-white/80 px-4 py-3 text-center text-sm font-semibold text-slate-700">
-            © 2026 Medical Tourism India. All rights reserved.
-          </p>
+          <div className="rounded-xl border border-[var(--line)] bg-white/80 px-4 py-4">
+            <p className="text-center text-sm font-semibold text-slate-700">
+              © 2026 Medical Tourism India. All rights reserved.
+            </p>
+            <div className="mt-3 flex flex-wrap items-center justify-center gap-2 text-sm font-semibold text-slate-700">
+              <a href="https://www.youtube.com/@TreatAxis" target="_blank" rel="noreferrer" className="rounded-full border border-[var(--line)] px-3 py-2 transition hover:border-[var(--brand)] hover:text-[var(--brand)]">YouTube</a>
+              <a href="https://x.com/TreatAxis" target="_blank" rel="noreferrer" className="rounded-full border border-[var(--line)] px-3 py-2 transition hover:border-[var(--brand)] hover:text-[var(--brand)]">X</a>
+              <a href="https://www.linkedin.com/company/treataxis" target="_blank" rel="noreferrer" className="rounded-full border border-[var(--line)] px-3 py-2 transition hover:border-[var(--brand)] hover:text-[var(--brand)]">LinkedIn</a>
+              <a href="https://www.instagram.com/treataxis" target="_blank" rel="noreferrer" className="rounded-full border border-[var(--line)] px-3 py-2 transition hover:border-[var(--brand)] hover:text-[var(--brand)]">Instagram</a>
+              <a href="https://www.facebook.com/treataxis" target="_blank" rel="noreferrer" className="rounded-full border border-[var(--line)] px-3 py-2 transition hover:border-[var(--brand)] hover:text-[var(--brand)]">Facebook</a>
+            </div>
+          </div>
         </footer>
         <GlobalFloatingCta />
       </body>
