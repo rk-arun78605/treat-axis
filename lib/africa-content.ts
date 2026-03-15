@@ -96,6 +96,34 @@ export const africaCountries: AfricaCountryLanding[] = [
     topTreatments: ["Spine Surgery Abroad", "Liver Transplant Abroad", "Cardiac Care Abroad"],
   },
   {
+    slug: "maldives",
+    country: "Maldives",
+    locale: "en-MV",
+    marketFocus: "Planned treatment travel support from Maldives to India for specialist-led care pathways.",
+    primaryNeeds: [
+      "Fast specialist matching with clear treatment timelines",
+      "Transparent treatment estimates before travel confirmation",
+      "Coordinated planning for attendant, stay, and discharge follow-up",
+    ],
+    whyIndia: [
+      "Short travel corridor with broad tertiary-care hospital access",
+      "High-volume specialties for cardiac, IVF, and orthopedic pathways",
+      "Structured support for international patients and family attendants",
+    ],
+    travelNotes: [
+      "Share latest reports and medicine list before finalizing travel dates.",
+      "Keep flexibility for 3-5 extra follow-up days after discharge.",
+      "Confirm post-return medicine continuity and remote check-in plan.",
+    ],
+    intentKeywords: [
+      "treatment in india from maldives",
+      "medical tourism maldives to india",
+      "ivf treatment in india from maldives",
+      "cardiac treatment in india for maldives patients",
+    ],
+    topTreatments: ["IVF and Fertility Treatment Abroad", "Cardiac Care Abroad", "Orthopedic Surgery Abroad"],
+  },
+  {
     slug: "tanzania",
     country: "Tanzania",
     locale: "en-TZ",

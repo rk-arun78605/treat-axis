@@ -202,6 +202,9 @@ export default async function DestinationCountryPage({ params, searchParams }: P
           <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[var(--brand)]">SEO treatment guide</p>
           <h1 className="mt-2 text-2xl font-semibold leading-tight text-slate-900">{treatmentSeoTitle}</h1>
           <p className="mt-2 text-sm leading-7 text-slate-700">{treatmentSeoDescription}</p>
+          <p className="mt-2 text-sm leading-7 text-slate-700">
+            Popular inbound corridors include <Link href="/africa/ghana" className="font-semibold text-[var(--brand)] hover:underline">Ghana</Link>, <Link href="/africa/nigeria" className="font-semibold text-[var(--brand)] hover:underline">Nigeria</Link>, <Link href="/africa/kenya" className="font-semibold text-[var(--brand)] hover:underline">Kenya</Link>, <Link href="/africa/ethiopia" className="font-semibold text-[var(--brand)] hover:underline">Ethiopia</Link>, <Link href="/africa/egypt" className="font-semibold text-[var(--brand)] hover:underline">Egypt</Link>, and <Link href="/africa/maldives" className="font-semibold text-[var(--brand)] hover:underline">Maldives</Link>.
+          </p>
           <div className="mt-3 flex flex-wrap gap-2">
             {seoKeywords.map((keyword) => (
               <span
@@ -266,6 +269,9 @@ export default async function DestinationCountryPage({ params, searchParams }: P
           {destination.country} medical tourism guide.
         </h1>
         <p className="mt-5 text-base leading-8 text-[var(--muted)]">{destination.seoSummary}</p>
+        <p className="mt-3 text-sm leading-7 text-slate-700">
+          Continue with <Link href="/treatments" className="font-semibold text-[var(--brand)] hover:underline">treatment pages</Link> and <Link href="/blog" className="font-semibold text-[var(--brand)] hover:underline">detailed planning blogs</Link> to match procedure type, budget, and recovery timeline before you submit an inquiry.
+        </p>
       </header>
 
       <section className="mt-10 grid gap-6 lg:grid-cols-2">

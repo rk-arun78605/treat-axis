@@ -5,9 +5,9 @@ import { PathwaySwitchCards } from "../components/pathway-switch-cards";
 import { africaCountries } from "../../lib/africa-content";
 
 export const metadata: Metadata = {
-  title: "Medical Tourism from Africa to India",
+  title: "Medical Tourism from Africa and Maldives to India",
   description:
-    "Explore country-specific medical tourism pages for Africa and compare treatment in India by hospital, budget, and travel planning needs.",
+    "Explore country-specific medical tourism pages for Africa and Maldives, and compare treatment in India by hospital, budget, and travel planning needs.",
   alternates: {
     canonical: "/africa",
     languages: {
@@ -16,9 +16,9 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Medical Tourism from Africa to India | TreatAxis",
+    title: "Medical Tourism from Africa and Maldives to India | TreatAxis",
     description:
-      "Country-specific Africa pages for treatment in India with practical pathway, stay, and recovery guidance.",
+      "Country-specific pages for Africa and Maldives with practical pathway, stay, and recovery guidance.",
     url: "https://www.treataxis.com/africa",
     type: "website",
   },
@@ -54,11 +54,14 @@ export default function AfricaHubPage() {
       <header className="max-w-4xl">
         <p className="text-sm font-semibold uppercase tracking-[0.28em] text-[var(--brand)]">Africa</p>
         <h1 className="mt-4 font-display text-5xl leading-tight text-slate-950 sm:text-6xl">
-          Country-specific treatment abroad pages for Africa
+          Country-specific treatment abroad pages for Africa and Maldives
         </h1>
         <p className="mt-5 text-base leading-8 text-[var(--muted)]">
           Compare treatment pathways in India with country-specific planning guidance for hospitals, visa, stay,
           and post-treatment recovery.
+        </p>
+        <p className="mt-3 text-sm leading-7 text-slate-700">
+          Priority corridors: <Link href="/africa/ghana" className="font-semibold text-[var(--brand)] hover:underline">Ghana</Link>, <Link href="/africa/nigeria" className="font-semibold text-[var(--brand)] hover:underline">Nigeria</Link>, <Link href="/africa/kenya" className="font-semibold text-[var(--brand)] hover:underline">Kenya</Link>, <Link href="/africa/ethiopia" className="font-semibold text-[var(--brand)] hover:underline">Ethiopia</Link>, <Link href="/africa/egypt" className="font-semibold text-[var(--brand)] hover:underline">Egypt</Link>, and <Link href="/africa/maldives" className="font-semibold text-[var(--brand)] hover:underline">Maldives</Link>.
         </p>
       </header>
 

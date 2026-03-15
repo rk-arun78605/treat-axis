@@ -84,6 +84,29 @@ const countrySpecificContent: Record<
       },
     ],
   },
+  maldives: {
+    narrative:
+      "Maldives-origin patients often look for predictable treatment timelines and faster specialist access in India, especially for IVF, cardiac, and orthopedic pathways. Family comfort, short travel windows, and recovery continuity usually shape final hospital selection.",
+    corridorNotes: [
+      "Male-based families often compare Delhi and Bengaluru for procedure speed and specialist depth.",
+      "IVF and cardiac pathways usually benefit from report-first triage before travel confirmation.",
+      "Plan 3-5 buffer days for post-discharge checks before return travel.",
+    ],
+    conversionNote:
+      "For Maldives patients, we prioritize specialist matching speed, realistic stay planning, and clear follow-up sequencing.",
+    faqs: [
+      {
+        question: "Can Maldives patients complete treatment planning before travel?",
+        answer:
+          "Yes. Report-first review helps define the right specialist team, expected timeline, and city options before booking.",
+      },
+      {
+        question: "Which pathways are most common from Maldives to India?",
+        answer:
+          "IVF, cardiac, and orthopedic pathways are common because they often need specialist access and coordinated follow-up.",
+      },
+    ],
+  },
   tanzania: {
     narrative:
       "Tanzania patients usually ask for predictable treatment timelines and city-wise affordability before finalizing medical travel. Practical recovery support is a major decision factor.",
@@ -293,6 +316,7 @@ export default async function AfricaCountryPage({ params }: PageProps) {
   };
 
   const linkedTreatments = treatments.filter((item) => landing.topTreatments.includes(item.name));
+  const leadTreatment = linkedTreatments[0];
 
   return (
     <main className="mx-auto w-full max-w-6xl px-6 py-14 lg:px-10">
@@ -304,6 +328,9 @@ export default async function AfricaCountryPage({ params }: PageProps) {
           Treatment in India from {landing.country}
         </h1>
         <p className="mt-5 text-base leading-8 text-[var(--muted)]">{landing.marketFocus}</p>
+        <p className="mt-3 text-sm leading-7 text-slate-700">
+          Start with <Link href="/destinations/india" className="font-semibold text-[var(--brand)] hover:underline">India hospital comparison</Link>, then review <Link href="/treatments" className="font-semibold text-[var(--brand)] hover:underline">treatment pathways</Link> and <Link href="/blog" className="font-semibold text-[var(--brand)] hover:underline">patient planning blogs</Link> before requesting an estimate.
+        </p>
       </header>
 
       <section className="mt-8 grid gap-6 lg:grid-cols-2">
@@ -344,6 +371,11 @@ export default async function AfricaCountryPage({ params }: PageProps) {
         <article className="rounded-[1.5rem] border border-[var(--line)] bg-white/85 p-6">
           <h2 className="text-2xl font-semibold text-slate-900">{landing.country}-specific treatment planning context</h2>
           <p className="mt-4 text-sm leading-8 text-slate-700">{specific.narrative}</p>
+          {leadTreatment ? (
+            <p className="mt-3 text-sm leading-7 text-slate-700">
+              A common next step is to review <Link href={`/treatments/${leadTreatment.slug}`} className="font-semibold text-[var(--brand)] hover:underline">{leadTreatment.name}</Link> and then read the related <Link href={`/blog/${leadTreatment.slug}`} className="font-semibold text-[var(--brand)] hover:underline">country-relevant treatment guide</Link>.
+            </p>
+          ) : null}
         </article>
         <article className="rounded-[1.5rem] border border-[var(--line)] bg-white/85 p-6">
           <h2 className="text-2xl font-semibold text-slate-900">Common travel corridor notes for {landing.country}</h2>

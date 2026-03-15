@@ -430,6 +430,9 @@ export default async function TreatmentDetailPage({ params }: PageProps) {
           {treatment.name}
         </h1>
         <p className="mt-6 text-base leading-8 text-[var(--muted)]">{treatment.summary}</p>
+        <p className="mt-3 text-sm leading-7 text-slate-700">
+          For this pathway, compare <Link href={`/destinations/india?treatment=${encodeURIComponent(treatment.name)}`} className="font-semibold text-[var(--brand)] hover:underline">city-level hospital options in India</Link>, review the matching <Link href={`/blog/${treatment.slug}`} className="font-semibold text-[var(--brand)] hover:underline">treatment planning blog</Link>, and then submit your <Link href="/#inquiry-form" className="font-semibold text-[var(--brand)] hover:underline">estimate request</Link>.
+        </p>
         <div className="mt-6 flex flex-wrap gap-3">
           <TreatmentPriceModal
             defaultTreatment={treatment.name}
@@ -454,6 +457,9 @@ export default async function TreatmentDetailPage({ params }: PageProps) {
             Understand {treatment.name.toLowerCase()}, treatment pathway, and recovery before traveling abroad.
           </h2>
           <p className="mt-4 text-sm leading-8 text-slate-700">{education.illnessOverview}</p>
+          <p className="mt-3 text-sm leading-7 text-slate-700">
+            Patients from <Link href="/africa/ghana" className="font-semibold text-[var(--brand)] hover:underline">Ghana</Link>, <Link href="/africa/nigeria" className="font-semibold text-[var(--brand)] hover:underline">Nigeria</Link>, <Link href="/africa/kenya" className="font-semibold text-[var(--brand)] hover:underline">Kenya</Link>, <Link href="/africa/ethiopia" className="font-semibold text-[var(--brand)] hover:underline">Ethiopia</Link>, <Link href="/africa/egypt" className="font-semibold text-[var(--brand)] hover:underline">Egypt</Link>, and <Link href="/africa/maldives" className="font-semibold text-[var(--brand)] hover:underline">Maldives</Link> typically ask for timeline clarity and recovery planning before final booking.
+          </p>
           <ul className="mt-5 space-y-2 text-sm leading-7 text-slate-800">
             {education.illnessEducation.map((item) => (
               <li key={item}>• {item}</li>
