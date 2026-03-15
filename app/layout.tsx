@@ -116,7 +116,8 @@ gtag('config', 'G-GJ4X5Y1YJE');`}
                   Africa
                   <span aria-hidden="true" className="text-xs">▾</span>
                 </Link>
-                <div className="pointer-events-none absolute left-0 top-full z-50 mt-2 w-56 rounded-xl border border-[var(--line)] bg-white/95 p-2 opacity-0 shadow-[0_18px_40px_rgba(15,23,42,0.14)] transition group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100">
+                <div className="pointer-events-none absolute left-0 top-full z-50 w-56 pt-2 opacity-0 transition group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100">
+                  <div className="rounded-xl border border-[var(--line)] bg-white/95 p-2 shadow-[0_18px_40px_rgba(15,23,42,0.14)]">
                   {africaCountries.map((country) => (
                     <Link
                       key={country.slug}
@@ -126,6 +127,7 @@ gtag('config', 'G-GJ4X5Y1YJE');`}
                       {country.country}
                     </Link>
                   ))}
+                  </div>
                 </div>
               </div>
               <Link href="/destinations" className="transition hover:text-[var(--brand)]">Destinations</Link>

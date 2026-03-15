@@ -600,7 +600,7 @@ export function TreaHeroAssistant() {
                   return (
                     <article
                       key={option.id}
-                      className="flex h-full flex-col overflow-hidden rounded-[1.4rem] border border-white/10 bg-black/20"
+                      className="relative flex h-full flex-col overflow-hidden rounded-[1.4rem] border border-white/10 bg-black/20"
                     >
                       <div className="relative h-36 overflow-hidden border-b border-white/10">
                         <Image
@@ -632,7 +632,7 @@ export function TreaHeroAssistant() {
                         </button>
 
                         {costRequest.openForId === option.id ? (
-                          <div className="mt-3 rounded-xl border border-white/15 bg-slate-900/90 p-3">
+                          <div className="absolute inset-x-3 bottom-3 z-20 rounded-xl border border-white/15 bg-slate-900/95 p-3 shadow-[0_16px_40px_rgba(2,6,23,0.55)] backdrop-blur">
                             <p className="text-[10px] uppercase tracking-[0.16em] text-amber-300">{option.location}</p>
                             <p className="mt-1 text-xs font-semibold text-white">Share mobile number for exact estimate</p>
 
