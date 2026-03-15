@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { destinations } from "../../../../lib/seo-content";
+import { destinations, treatments } from "../../../../lib/seo-content";
 
 type Params = {
   country: string;
@@ -48,6 +48,9 @@ export default async function DestinationCityPage({ params }: PageProps) {
   if (!country || !city) {
     notFound();
   }
+
+  const relatedTreatments = treatments.slice(0, 4);
+  const siblingCities = country.cities.filter((item) => item.slug !== city.slug).slice(0, 3);
 
   return (
     <main className="mx-auto w-full max-w-6xl px-6 py-16 lg:px-10">
@@ -100,6 +103,58 @@ export default async function DestinationCityPage({ params }: PageProps) {
         >
           Back to {country.country}
         </Link>
+      </section>
+
+      <section className="mt-10 rounded-[1.5rem] border border-[var(--line)] bg-white/80 p-6">
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--brand)]">Related pages</p>
+        <h2 className="mt-2 text-2xl font-semibold text-slate-900">Continue from {city.city} to treatment and blog clusters</h2>
+
+        <div className="mt-5 grid gap-4 lg:grid-cols-3">
+          <article className="rounded-xl border border-[var(--line)] bg-white p-4">
+            <p className="text-sm font-semibold text-slate-900">Sibling city hubs</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {siblingCities.map((item) => (
+                <Link
+                  key={item.slug}
+                  href={`/destinations/${country.slug}/${item.slug}`}
+                  className="rounded-full border border-[var(--line)] px-3 py-2 text-xs font-semibold text-slate-800 transition hover:border-[var(--brand)] hover:text-[var(--brand)]"
+                >
+                  {item.city}
+                </Link>
+              ))}
+            </div>
+          </article>
+
+          <article className="rounded-xl border border-[var(--line)] bg-white p-4">
+            <p className="text-sm font-semibold text-slate-900">Treatment pages</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {relatedTreatments.map((item) => (
+                <Link
+                  key={`city-treat-${item.slug}`}
+                  href={`/treatments/${item.slug}`}
+                  className="rounded-full border border-[var(--line)] px-3 py-2 text-xs font-semibold text-slate-800 transition hover:border-[var(--brand)] hover:text-[var(--brand)]"
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </div>
+          </article>
+
+          <article className="rounded-xl border border-[var(--line)] bg-white p-4">
+            <p className="text-sm font-semibold text-slate-900">Blog guides</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {relatedTreatments.map((item) => (
+                <Link
+                  key={`city-blog-${item.slug}`}
+                  href={`/blog/${item.slug}`}
+                  className="rounded-full border border-[var(--line)] px-3 py-2 text-xs font-semibold text-slate-800 transition hover:border-[var(--brand)] hover:text-[var(--brand)]"
+                >
+                  {item.name} blog
+                </Link>
+              ))}
+            </div>
+          </article>
+        </div>
       </section>
     </main>
   );

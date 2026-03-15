@@ -4,7 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { TreatmentPriceModal } from "../../components/treatment-price-modal";
 import { TreatmentInlineAi } from "../../components/treatment-inline-ai";
-import { treatmentBySlug, treatments } from "../../../lib/seo-content";
+import { destinationByCountrySlug, treatmentBySlug, treatments } from "../../../lib/seo-content";
 
 type Params = {
   slug: string;
@@ -389,6 +389,8 @@ export default async function TreatmentDetailPage({ params }: PageProps) {
 
   const education = treatmentEducationBySlug[slug] || defaultEducationForTreatment(treatment.name);
   const budgetGuide = budgetGuideBySlug[slug] || defaultBudgetGuide();
+  const relatedTreatments = treatments.filter((item) => item.slug !== slug).slice(0, 4);
+  const indiaDestination = destinationByCountrySlug["india"];
 
   const schema = {
     "@context": "https://schema.org",
@@ -666,6 +668,63 @@ export default async function TreatmentDetailPage({ params }: PageProps) {
               <p className="mt-2 text-sm leading-7 text-[var(--muted)]">{item.answer}</p>
             </article>
           ))}
+        </div>
+      </section>
+
+      <section className="mt-10 rounded-[1.6rem] border border-[var(--line)] bg-white/85 p-6 lg:p-8">
+        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--brand)]">Related resources</p>
+        <h2 className="mt-3 text-2xl font-semibold text-slate-950">Continue researching this treatment pathway</h2>
+        <div className="mt-5 grid gap-4 lg:grid-cols-3">
+          <article className="rounded-xl border border-[var(--line)] bg-white p-4">
+            <p className="text-sm font-semibold text-slate-900">Related treatment pages</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {relatedTreatments.map((item) => (
+                <Link
+                  key={item.slug}
+                  href={`/treatments/${item.slug}`}
+                  className="rounded-full border border-[var(--line)] px-3 py-2 text-xs font-semibold text-slate-800 transition hover:border-[var(--brand)] hover:text-[var(--brand)]"
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </div>
+          </article>
+
+          <article className="rounded-xl border border-[var(--line)] bg-white p-4">
+            <p className="text-sm font-semibold text-slate-900">Related blog guides</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {relatedTreatments.map((item) => (
+                <Link
+                  key={`blog-${item.slug}`}
+                  href={`/blog/${item.slug}`}
+                  className="rounded-full border border-[var(--line)] px-3 py-2 text-xs font-semibold text-slate-800 transition hover:border-[var(--brand)] hover:text-[var(--brand)]"
+                >
+                  {item.name} blog
+                </Link>
+              ))}
+            </div>
+          </article>
+
+          <article className="rounded-xl border border-[var(--line)] bg-white p-4">
+            <p className="text-sm font-semibold text-slate-900">Destination hubs</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <Link
+                href={`/destinations/india?treatment=${encodeURIComponent(treatment.name)}`}
+                className="rounded-full border border-[var(--line)] px-3 py-2 text-xs font-semibold text-slate-800 transition hover:border-[var(--brand)] hover:text-[var(--brand)]"
+              >
+                India hospitals for {treatment.name}
+              </Link>
+              {indiaDestination?.cities.slice(0, 2).map((city) => (
+                <Link
+                  key={city.slug}
+                  href={`/destinations/india/${city.slug}`}
+                  className="rounded-full border border-[var(--line)] px-3 py-2 text-xs font-semibold text-slate-800 transition hover:border-[var(--brand)] hover:text-[var(--brand)]"
+                >
+                  {city.city}
+                </Link>
+              ))}
+            </div>
+          </article>
         </div>
       </section>
     </main>
