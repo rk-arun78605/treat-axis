@@ -548,7 +548,7 @@ export function TreaHeroAssistant() {
   ];
 
   return (
-    <section className="rounded-[2rem] border border-[var(--line)] bg-slate-950 p-3 text-white shadow-[0_28px_100px_rgba(15,23,42,0.18)] lg:p-4">
+    <section className="relative rounded-[2rem] border border-[var(--line)] bg-slate-950 p-3 text-white shadow-[0_28px_100px_rgba(15,23,42,0.18)] lg:p-4">
       <div className="grid gap-4 xl:grid-cols-[0.88fr_1.12fr] xl:items-start">
         <div className="rounded-[1.5rem] bg-white/6 p-4 md:p-5">
           <div className="flex items-center gap-3">
@@ -698,7 +698,7 @@ export function TreaHeroAssistant() {
       </div>
 
       {activeCostOption ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4" role="dialog" aria-modal="true">
+        <div className="absolute inset-0 z-40 flex items-center justify-center rounded-[2rem] bg-slate-950/75 p-4" role="dialog" aria-modal="true">
           <div className="w-full max-w-md rounded-[1.4rem] border border-white/15 bg-slate-900 p-5 shadow-[0_20px_80px_rgba(2,6,23,0.65)]">
             <div className="flex items-start justify-between gap-4">
               <div>
