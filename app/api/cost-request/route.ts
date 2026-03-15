@@ -199,7 +199,7 @@ export async function POST(request: Request) {
     });
 
     return jsonResponse({
-      message: `Unable to save your request right now. ${reason}`,
+      message: "Unable to save your request right now. Please try again shortly.",
       inquiryId,
       saved: false,
       resolvedRegion,
