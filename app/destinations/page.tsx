@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
+import { permanentRedirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Medical Tourism Destinations",
@@ -9,5 +9,5 @@ export const metadata: Metadata = {
 };
 
 export default function DestinationsIndexPage() {
-  redirect("/africa");
+  permanentRedirect("/africa");
 }
