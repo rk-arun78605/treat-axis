@@ -24,6 +24,11 @@ const slogan = "Plan Treatment Abroad With Confidence";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
+  icons: {
+    icon: "/treataxis-logo.svg",
+    shortcut: "/treataxis-logo.svg",
+    apple: "/treataxis-logo.svg",
+  },
   title: {
     default: `${siteName} | ${slogan}`,
     template: `%s | ${siteName}`,
