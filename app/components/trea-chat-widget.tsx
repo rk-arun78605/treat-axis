@@ -71,10 +71,6 @@ const onboardingSteps: OnboardingStep[] = [
 const initialMessages: Message[] = [
   {
     role: "assistant",
-    text: "Hi, I am TREA. I will ask short questions one by one like a care coordinator.",
-  },
-  {
-    role: "assistant",
     text: onboardingSteps[0].question,
   },
 ];
@@ -117,7 +113,7 @@ function getStepChoices(field?: ProfileField) {
     ];
   }
 
-  if (field === "reportsAvailable" || field === "attendantRequired") {
+  if (field === "reportsAvailable") {
     return ["yes", "no", "skip"];
   }
 
@@ -231,6 +227,28 @@ export function TreaChatWidget() {
   const [reportFile, setReportFile] = useState<File | null>(null);
   const [reportStatus, setReportStatus] = useState("");
   const [reportUploading, setReportUploading] = useState(false);
+
+  function resetConversation() {
+    setMessages(initialMessages);
+    setInput("");
+    setSessionId(crypto.randomUUID());
+    setCurrentStep(0);
+    setCareOptions([]);
+    setProfile({
+      whatsappNumber: "",
+      careTier: "",
+      treatment: "",
+      budgetRangeUsd: "",
+      country: "",
+      ageGroup: "",
+      travelMonth: "",
+      reportsAvailable: "",
+    });
+    setRequiresReportUpload(false);
+    setReportFile(null);
+    setReportStatus("");
+    setReportUploading(false);
+  }
 
   const currentStepConfig =
     currentStep < onboardingSteps.length ? onboardingSteps[currentStep] : undefined;
@@ -691,6 +709,7 @@ export function TreaChatWidget() {
         <button
           type="button"
           onClick={() => {
+            resetConversation();
             setIsOpen(true);
             trackEvent("chat_widget_open", { source: "trea-widget" });
           }}

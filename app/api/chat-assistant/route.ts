@@ -333,15 +333,6 @@ function buildFallbackMessage(payload: {
     return "Which country are you traveling from?";
   }
 
-  const missingOptionalPrompt =
-    !payload.travelMonth
-      ? "What month do you want to travel?"
-      : !payload.reportsAvailable
-        ? "Do you have medical reports? yes or no"
-        : !payload.attendantRequired
-          ? "Will someone travel with the patient? yes or no"
-          : "";
-
   const treatment = payload.treatment || "your required treatment";
   const budget = payload.budgetRangeUsd || "your budget";
   const country = payload.country || "your country";
@@ -372,11 +363,16 @@ function buildFallbackMessage(payload: {
   return [
     "I understand this can feel stressful. I will guide you step by step.",
     `Need: ${treatment}. Budget: ${budget}. Country: ${country}. Age: ${ageGroup}.`,
-    "Please choose hospital type using the options shown below.",
-    payload.question
-      ? `For your question: ${payload.question}`
-      : "Please ask your main medical question in one sentence.",
-    missingOptionalPrompt ? `Next: ${missingOptionalPrompt}` : "You can now ask any question and I will keep answers short.",
+    "City options: Delhi, Bengaluru, Kerala.",
+    "Treatment time: 4-10 days depending on diagnostics and clinical complexity.",
+    "Visa: Medical visa or e-Medical pathway based on passport.",
+    "Flight: Direct or one-stop flight options with airport assistance.",
+    "Transport: App cab + hospital pickup support when scheduled.",
+    "Recovery: 2-6 weeks follow-up and recovery guidance after return.",
+    "Medicine: Discharge prescriptions and refill planning before departure.",
+    "Food: Patient-friendly mild meals near hospital corridors.",
+    "Stay: 6-12 days depending on case and review schedule.",
+    "Estimated cost range (USD): $1,500 - $12,000 depending on treatment type.",
   ].join("\n");
 }
 
@@ -427,7 +423,7 @@ async function generateAssistantMessage(input: {
         {
           role: "system",
           content:
-            "You are TREA medical travel assistant. Use empathetic, simple language for families and elderly users. Keep answers short. Ask only one small follow-up question at a time. Never ask for details already provided in context. If country or query is India, include 3 options in this order: low-cost, mid-range, premium only when care tier is not yet selected.",
+            "You are TREA medical travel assistant. Use empathetic, simple language for families and elderly users. Never ask for details already present in the prompt. For medical-treatment questions, always return concise practical sections in this exact order with one short line each: City options, Treatment time, Visa, Flight, Transport, Recovery, Medicine, Food, Stay, Estimated cost range (USD). Include 3 city options from India: Delhi, Bengaluru, Kerala. Keep it educational and non-diagnostic.",
         },
         {
           role: "user",
