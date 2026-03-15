@@ -620,13 +620,23 @@ export function TreaChatWidget() {
         body: formData,
       });
 
-      const result = (await response.json()) as { message?: string };
+      const result = (await response.json()) as {
+        message?: string;
+        uploaded?: boolean;
+        configured?: boolean;
+      };
 
       if (!response.ok) {
         throw new Error(result.message || "Unable to upload report right now.");
       }
 
-      setReportStatus("Report uploaded successfully.");
+      if (result.uploaded === false) {
+        setReportStatus(
+          result.message || "Report upload is not configured yet. Continuing without upload.",
+        );
+      } else {
+        setReportStatus("Report uploaded successfully.");
+      }
       setRequiresReportUpload(false);
       finalizeOnboarding({
         whatsappNumber: profile.whatsappNumber,

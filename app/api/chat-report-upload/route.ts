@@ -41,10 +41,11 @@ export async function POST(request: Request) {
   const bucket = process.env.APP_REPORTS_BUCKET_NAME || "";
 
   if (!region || !bucket) {
-    return NextResponse.json(
-      { message: "Report upload is not configured yet." },
-      { status: 503 },
-    );
+    return NextResponse.json({
+      message: "Report upload is not configured yet. Continuing without upload.",
+      uploaded: false,
+      configured: false,
+    });
   }
 
   const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
@@ -64,6 +65,8 @@ export async function POST(request: Request) {
 
   return NextResponse.json({
     message: "Report uploaded successfully.",
+    uploaded: true,
+    configured: true,
     key: objectKey,
   });
 }

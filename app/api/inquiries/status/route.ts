@@ -19,11 +19,13 @@ export async function GET() {
     process.env.DDB_CHAT_TABLE_NAME ||
     process.env.AWS_CHAT_TABLE_NAME ||
     "treataxis-chat-prod";
+  const reportsBucket = process.env.APP_REPORTS_BUCKET_NAME || "";
 
   const config = {
     resolvedRegion,
     resolvedInquiriesTableName: inquiriesTableName,
     resolvedChatTableName: chatTableName,
+    reportUploadConfigured: Boolean(reportsBucket && resolvedRegion),
     appRegion: appRegionConfigured,
     ddbInquiriesTableName: Boolean(inquiriesTableName),
     ddbChatTableName: Boolean(chatTableName),
