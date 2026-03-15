@@ -3,10 +3,23 @@ import Link from "next/link";
 import { treatments } from "../../lib/seo-content";
 
 export const metadata: Metadata = {
-  title: "Treatment Blogs",
+  title: "Medical Tourism Blog | Treatment Planning Guides",
   description:
-    "Read treatment-focused medical tourism blogs with practical pathway guidance and direct estimate CTA.",
+    "Read practical treatment-planning guides for medical travel to India, including timelines, costs, recovery, and hospital selection tips.",
   alternates: { canonical: "/blog" },
+  openGraph: {
+    title: "Medical Tourism Blog | Treatment Planning Guides",
+    description:
+      "Read practical treatment-planning guides for medical travel to India, including timelines, costs, recovery, and hospital selection tips.",
+    url: "https://www.treataxis.com/blog",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Medical Tourism Blog | Treatment Planning Guides",
+    description:
+      "Read practical treatment-planning guides for medical travel to India, including timelines, costs, recovery, and hospital selection tips.",
+  },
 };
 
 export default function BlogIndexPage() {

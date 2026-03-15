@@ -37,16 +37,28 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   return {
-    title: `${treatment.name} Blog`,
+    title: `${treatment.name} Guide | Medical Travel Blog`,
     description: treatment.summary,
     alternates: {
       canonical: `/blog/${treatment.slug}`,
     },
+    keywords: [
+      treatment.name,
+      "medical tourism India",
+      "treatment abroad",
+      "international patient guide",
+      "medical travel planning",
+    ],
     openGraph: {
       title: `${treatment.name} | TreatAxis Blog`,
       description: treatment.summary,
       url: `https://www.treataxis.com/blog/${treatment.slug}`,
       type: "article",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${treatment.name} Guide | Medical Travel Blog`,
+      description: treatment.summary,
     },
   };
 }
@@ -60,8 +72,53 @@ export default async function TreatmentBlogPage({ params }: PageProps) {
     notFound();
   }
 
+  const publishedDate = "2026-03-01";
+  const modifiedDate = new Date().toISOString();
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BlogPosting",
+        headline: `${treatment.name} Guide`,
+        description: treatment.summary,
+        datePublished: publishedDate,
+        dateModified: modifiedDate,
+        mainEntityOfPage: `https://www.treataxis.com/blog/${treatment.slug}`,
+        author: {
+          "@type": "Organization",
+          name: "TreatAxis Editorial Team",
+        },
+        publisher: {
+          "@type": "Organization",
+          name: "TreatAxis",
+          logo: {
+            "@type": "ImageObject",
+            url: "https://www.treataxis.com/treataxis-logo.svg",
+          },
+        },
+        articleSection: "Medical Tourism",
+      },
+      {
+        "@type": "FAQPage",
+        mainEntity: treatment.faqs.map((item) => ({
+          "@type": "Question",
+          name: item.question,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: item.answer,
+          },
+        })),
+      },
+    ],
+  };
+
   return (
     <main className="mx-auto w-full max-w-6xl px-6 py-16 lg:px-10">
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      ></script>
       <header className="max-w-4xl">
         <p className="text-sm font-semibold uppercase tracking-[0.28em] text-[var(--brand)]">Treatment Blog</p>
         <h1 className="mt-4 font-display text-5xl leading-tight text-slate-950 sm:text-6xl">{treatment.name}</h1>
