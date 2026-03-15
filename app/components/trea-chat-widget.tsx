@@ -14,15 +14,13 @@ type CareOption = {
 };
 
 type ProfileField =
-  | "whatsappNumber"
-  | "budgetRangeUsd"
-  | "careTier"
-  | "treatment"
   | "country"
+  | "whatsappNumber"
+  | "treatment"
+  | "budgetRangeUsd"
   | "ageGroup"
   | "travelMonth"
-  | "reportsAvailable"
-  | "attendantRequired";
+  | "reportsAvailable";
 
 type OnboardingStep = {
   field: ProfileField;
@@ -32,14 +30,14 @@ type OnboardingStep = {
 
 const onboardingSteps: OnboardingStep[] = [
   {
+    field: "country",
+    question: "Which country are you traveling from? You can type skip.",
+    required: false,
+  },
+  {
     field: "whatsappNumber",
     question:
       "I understand this can feel stressful. Please share WhatsApp number only.",
-    required: true,
-  },
-  {
-    field: "budgetRangeUsd",
-    question: "Please select your budget in USD.",
     required: true,
   },
   {
@@ -48,9 +46,9 @@ const onboardingSteps: OnboardingStep[] = [
     required: true,
   },
   {
-    field: "country",
-    question: "Which country are you traveling from? You can type skip.",
-    required: false,
+    field: "budgetRangeUsd",
+    question: "Please select your budget in USD.",
+    required: true,
   },
   {
     field: "ageGroup",
@@ -60,17 +58,12 @@ const onboardingSteps: OnboardingStep[] = [
   },
   {
     field: "travelMonth",
-    question: "Expected travel month? You can type skip.",
+    question: "Expected travel month?",
     required: false,
   },
   {
     field: "reportsAvailable",
-    question: "Do you have medical reports?",
-    required: false,
-  },
-  {
-    field: "attendantRequired",
-    question: "Will someone travel with the patient?",
+    question: "Do you have medical reports? (yes/no)",
     required: false,
   },
 ];
@@ -102,7 +95,26 @@ function getStepChoices(field?: ProfileField) {
   }
 
   if (field === "ageGroup") {
-    return ["infant", "toddler", "child", "adult", "aged", "old-age", "skip"];
+    return ["infant", "toddler", "child", "adult", "aged", "old age", "skip"];
+  }
+
+  if (field === "travelMonth") {
+    const now = new Date();
+    const nextMonthDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    const nextMonthLabel = nextMonthDate.toLocaleString("en-US", {
+      month: "long",
+      year: "numeric",
+    });
+
+    return [
+      "<7 days",
+      "7-15 days",
+      `${nextMonthLabel}`,
+      "within 2 months",
+      "within 6 months",
+      "next year",
+      "skip",
+    ];
   }
 
   if (field === "reportsAvailable" || field === "attendantRequired") {
@@ -214,8 +226,11 @@ export function TreaChatWidget() {
     ageGroup: "",
     travelMonth: "",
     reportsAvailable: "",
-    attendantRequired: "",
   });
+  const [requiresReportUpload, setRequiresReportUpload] = useState(false);
+  const [reportFile, setReportFile] = useState<File | null>(null);
+  const [reportStatus, setReportStatus] = useState("");
+  const [reportUploading, setReportUploading] = useState(false);
 
   const currentStepConfig =
     currentStep < onboardingSteps.length ? onboardingSteps[currentStep] : undefined;
@@ -235,6 +250,37 @@ export function TreaChatWidget() {
 
   const canSend = useMemo(() => input.trim().length > 0 && !isLoading, [input, isLoading]);
 
+  function buildCompletionMessage(nextProfile: {
+    treatment: string;
+    budgetRangeUsd: string;
+    country: string;
+    ageGroup: string;
+  }) {
+    return [
+      "!!. Thank you for your details..!!",
+      `I understand this can feel stressful. I will guide you step by step. Need: ${nextProfile.treatment || "not shared"}. Budget: ${nextProfile.budgetRangeUsd || "not shared"}. Country: ${nextProfile.country || "not shared"}. Age: ${nextProfile.ageGroup || "not shared"}. Please choose hospital type using the options shown below.`,
+    ].join("\n");
+  }
+
+  function finalizeOnboarding(nextProfile: {
+    treatment: string;
+    budgetRangeUsd: string;
+    country: string;
+    ageGroup: string;
+  }) {
+    setMessages((previous) => [
+      ...previous,
+      {
+        role: "assistant",
+        text: buildCompletionMessage(nextProfile),
+      },
+    ]);
+
+    setTimeout(() => {
+      setIsOpen(false);
+    }, 1800);
+  }
+
   async function submitText(rawText: string) {
     const question = rawText.trim();
 
@@ -249,6 +295,7 @@ export function TreaChatWidget() {
       const step = onboardingSteps[currentStep];
       const normalizedAnswer = question.trim();
       const isSkip = normalizedAnswer.toLowerCase() === "skip";
+      const lowerAnswer = normalizedAnswer.toLowerCase();
 
       if (step.required && isSkip) {
         setMessages((previous) => [
@@ -259,11 +306,16 @@ export function TreaChatWidget() {
         return;
       }
 
+      const nextProfile = { ...profile };
+
       setProfile((previous) => {
         if (step.field === "whatsappNumber") {
+          const fallbackDialCode = previous.country
+            ? getDialCodeFromCountry(previous.country) || detectedDialCode
+            : detectedDialCode;
           const normalizedWhatsapp = isSkip
             ? ""
-            : normalizeWhatsappNumber(normalizedAnswer, detectedDialCode);
+            : normalizeWhatsappNumber(normalizedAnswer, fallbackDialCode);
           const digitsCount = normalizedWhatsapp.replace(/\D/g, "").length;
 
           if (!normalizedWhatsapp || digitsCount < 8) {
@@ -311,6 +363,44 @@ export function TreaChatWidget() {
         };
       });
 
+      if (step.field === "country") {
+        const countryValue = isSkip ? "" : normalizedAnswer;
+        const countryDialCode = getDialCodeFromCountry(countryValue);
+        nextProfile.country = countryValue;
+        if (countryDialCode && profile.whatsappNumber) {
+          nextProfile.whatsappNumber = withDialCode(profile.whatsappNumber, countryDialCode);
+        }
+      }
+
+      if (step.field === "whatsappNumber") {
+        const fallbackDialCode = profile.country
+          ? getDialCodeFromCountry(profile.country) || detectedDialCode
+          : detectedDialCode;
+        nextProfile.whatsappNumber = isSkip
+          ? ""
+          : normalizeWhatsappNumber(normalizedAnswer, fallbackDialCode);
+      }
+
+      if (step.field === "treatment") {
+        nextProfile.treatment = isSkip ? "" : normalizedAnswer;
+      }
+
+      if (step.field === "budgetRangeUsd") {
+        nextProfile.budgetRangeUsd = isSkip ? "" : normalizedAnswer;
+      }
+
+      if (step.field === "ageGroup") {
+        nextProfile.ageGroup = isSkip ? "" : normalizedAnswer;
+      }
+
+      if (step.field === "travelMonth") {
+        nextProfile.travelMonth = isSkip ? "" : normalizedAnswer;
+      }
+
+      if (step.field === "reportsAvailable") {
+        nextProfile.reportsAvailable = isSkip ? "" : lowerAnswer;
+      }
+
       trackEvent("chat_onboarding_answer", {
         field: step.field,
         required: step.required,
@@ -319,12 +409,28 @@ export function TreaChatWidget() {
       const nextStep = currentStep + 1;
 
       if (step.field === "whatsappNumber") {
-        const normalizedWhatsapp = normalizeWhatsappNumber(normalizedAnswer, detectedDialCode);
+        const fallbackDialCode = profile.country
+          ? getDialCodeFromCountry(profile.country) || detectedDialCode
+          : detectedDialCode;
+        const normalizedWhatsapp = normalizeWhatsappNumber(normalizedAnswer, fallbackDialCode);
         const digitsCount = normalizedWhatsapp.replace(/\D/g, "").length;
 
         if (!normalizedWhatsapp || digitsCount < 8) {
           return;
         }
+      }
+
+      if (step.field === "reportsAvailable" && lowerAnswer === "yes") {
+        setCurrentStep(onboardingSteps.length);
+        setRequiresReportUpload(true);
+        setMessages((previous) => [
+          ...previous,
+          {
+            role: "assistant",
+            text: "Please upload one PDF medical report (max 2 MB).",
+          },
+        ]);
+        return;
       }
 
       setCurrentStep(nextStep);
@@ -335,13 +441,12 @@ export function TreaChatWidget() {
           { role: "assistant", text: onboardingSteps[nextStep].question },
         ]);
       } else {
-        setMessages((previous) => [
-          ...previous,
-          {
-            role: "assistant",
-            text: "Thank you. Details captured. Now ask your medical question.",
-          },
-        ]);
+        finalizeOnboarding({
+          treatment: nextProfile.treatment,
+          budgetRangeUsd: nextProfile.budgetRangeUsd,
+          country: nextProfile.country,
+          ageGroup: nextProfile.ageGroup,
+        });
       }
 
       return;
@@ -424,6 +529,57 @@ export function TreaChatWidget() {
     );
   }
 
+  async function handleReportUpload() {
+    if (!reportFile || reportUploading) {
+      return;
+    }
+
+    if (reportFile.type !== "application/pdf") {
+      setReportStatus("Please upload only one PDF file.");
+      return;
+    }
+
+    if (reportFile.size > 2 * 1024 * 1024) {
+      setReportStatus("PDF must be 2 MB or smaller.");
+      return;
+    }
+
+    setReportUploading(true);
+    setReportStatus("");
+
+    try {
+      const formData = new FormData();
+      formData.append("file", reportFile);
+      formData.append("sessionId", sessionId);
+
+      const response = await fetch("/api/chat-report-upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = (await response.json()) as { message?: string };
+
+      if (!response.ok) {
+        throw new Error(result.message || "Unable to upload report right now.");
+      }
+
+      setReportStatus("Report uploaded successfully.");
+      setRequiresReportUpload(false);
+      finalizeOnboarding({
+        treatment: profile.treatment,
+        budgetRangeUsd: profile.budgetRangeUsd,
+        country: profile.country,
+        ageGroup: profile.ageGroup,
+      });
+    } catch (error) {
+      setReportStatus(
+        error instanceof Error ? error.message : "Unable to upload report right now.",
+      );
+    } finally {
+      setReportUploading(false);
+    }
+  }
+
   return (
     <div className="fixed bottom-5 right-5 z-50 w-[calc(100%-2.5rem)] max-w-sm">
       {isOpen ? (
@@ -485,6 +641,29 @@ export function TreaChatWidget() {
                   {option.label}
                 </button>
               ))}
+            </div>
+          ) : null}
+
+          {requiresReportUpload ? (
+            <div className="mt-3 rounded-xl border border-white/15 bg-white/10 p-3">
+              <label className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-300">
+                Upload medical report (single PDF, max 2 MB)
+              </label>
+              <input
+                type="file"
+                accept="application/pdf"
+                onChange={(event) => setReportFile(event.target.files?.[0] || null)}
+                className="mt-2 block w-full text-xs text-slate-200 file:mr-3 file:rounded-lg file:border-0 file:bg-amber-300 file:px-3 file:py-2 file:font-semibold file:text-slate-950"
+              />
+              <button
+                type="button"
+                onClick={() => void handleReportUpload()}
+                disabled={!reportFile || reportUploading}
+                className="mt-3 w-full rounded-xl bg-amber-400 px-3 py-2 text-sm font-semibold text-slate-900 disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {reportUploading ? "Uploading..." : "Upload report"}
+              </button>
+              {reportStatus ? <p className="mt-2 text-xs text-slate-200">{reportStatus}</p> : null}
             </div>
           ) : null}
 
