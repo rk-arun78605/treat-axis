@@ -295,8 +295,14 @@ async function saveChatRecord(record: {
   const tableName = getChatTableName();
   const client = getDocClient();
 
-  if (!tableName || !client) {
-    return;
+  if (!tableName) {
+    throw new Error("Missing chat table name configuration.");
+  }
+
+  if (!client) {
+    throw new Error(
+      "Missing DynamoDB region configuration. Set APP_REGION or APP_DEFAULT_REGION.",
+    );
   }
 
   await ensureChatTableExists();
@@ -473,6 +479,7 @@ export async function POST(request: Request) {
 
   const sessionId = normalizeString(body.sessionId) || crypto.randomUUID();
   const question = normalizeString(body.message);
+  const isProfileCapture = question === "__profile_capture__";
   const whatsappNumber = normalizeString(body.profile?.whatsappNumber);
   const careTier = normalizeString(body.profile?.careTier);
   const treatment = normalizeString(body.profile?.treatment);
@@ -483,27 +490,33 @@ export async function POST(request: Request) {
   const reportsAvailable = normalizeString(body.profile?.reportsAvailable);
   const attendantRequired = normalizeString(body.profile?.attendantRequired);
 
-  if (!question) {
+  if (!question && !whatsappNumber && !treatment && !budgetRangeUsd && !country) {
     return NextResponse.json({ message: "Please ask a question." }, { status: 400 });
   }
 
-  const assistantMessage = await generateAssistantMessage({
-    whatsappNumber,
-    careTier,
-    question,
-    treatment,
-    budgetRangeUsd,
-    country,
-    ageGroup,
-    travelMonth,
-    reportsAvailable,
-    attendantRequired,
-  });
+  const effectiveQuestion = isProfileCapture ? "Profile details submitted" : question;
+  const assistantMessage = isProfileCapture
+    ? "Thanks. Your profile details are captured."
+    : await generateAssistantMessage({
+        whatsappNumber,
+        careTier,
+        question,
+        treatment,
+        budgetRangeUsd,
+        country,
+        ageGroup,
+        travelMonth,
+        reportsAvailable,
+        attendantRequired,
+      });
+
+  let chatSaved = false;
+  let chatSaveError = "";
 
   await saveChatRecord({
     chatId: crypto.randomUUID(),
     sessionId,
-    userMessage: question,
+    userMessage: effectiveQuestion,
     assistantMessage,
     whatsappNumber,
     careTier,
@@ -515,8 +528,15 @@ export async function POST(request: Request) {
     reportsAvailable,
     attendantRequired,
     createdAt: new Date().toISOString(),
+  }).then(() => {
+    chatSaved = true;
   }).catch((error) => {
-    console.error("Unable to save chat record", error);
+    chatSaveError = error instanceof Error ? error.message : "Unknown save error.";
+    console.error("Unable to save chat record", {
+      error: chatSaveError,
+      tableName: getChatTableName(),
+      region: getAppRegion(),
+    });
   });
 
   const indiaIntent = includesIndia(country) || includesIndia(question);
@@ -536,7 +556,11 @@ export async function POST(request: Request) {
 
   return NextResponse.json({
     sessionId,
-    reply: finalReply,
+    reply: isProfileCapture ? "" : finalReply,
     careOptions,
+    chatSaved,
+    chatSaveError,
+    chatTableName: getChatTableName(),
+    chatRegion: getAppRegion(),
   });
 }

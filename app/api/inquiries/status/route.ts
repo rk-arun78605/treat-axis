@@ -3,12 +3,13 @@ import { NextResponse } from "next/server";
 export const runtime = "nodejs";
 
 export async function GET() {
-  const appRegionConfigured = Boolean(
+  const resolvedRegion =
     process.env.APP_REGION ||
-      process.env.APP_DEFAULT_REGION ||
-      process.env.AWS_REGION ||
-      process.env.AWS_DEFAULT_REGION,
-  );
+    process.env.APP_DEFAULT_REGION ||
+    process.env.AWS_REGION ||
+    process.env.AWS_DEFAULT_REGION ||
+    "";
+  const appRegionConfigured = Boolean(resolvedRegion);
 
   const inquiriesTableName =
     process.env.DDB_INQUIRIES_TABLE_NAME ||
@@ -20,6 +21,9 @@ export async function GET() {
     "treataxis-chat-prod";
 
   const config = {
+    resolvedRegion,
+    resolvedInquiriesTableName: inquiriesTableName,
+    resolvedChatTableName: chatTableName,
     appRegion: appRegionConfigured,
     ddbInquiriesTableName: Boolean(inquiriesTableName),
     ddbChatTableName: Boolean(chatTableName),

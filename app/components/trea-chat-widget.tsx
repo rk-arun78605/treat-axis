@@ -228,6 +228,35 @@ export function TreaChatWidget() {
   const [reportStatus, setReportStatus] = useState("");
   const [reportUploading, setReportUploading] = useState(false);
 
+  async function persistOnboardingProfile(snapshot: {
+    whatsappNumber: string;
+    treatment: string;
+    budgetRangeUsd: string;
+    country: string;
+    ageGroup: string;
+    travelMonth: string;
+    reportsAvailable: string;
+  }) {
+    try {
+      await fetch("/api/chat-assistant", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          sessionId,
+          message: "__profile_capture__",
+          profile: {
+            ...profile,
+            ...snapshot,
+          },
+        }),
+      });
+    } catch {
+      // Keep onboarding smooth even if capture save fails.
+    }
+  }
+
   function resetConversation() {
     setMessages(initialMessages);
     setInput("");
@@ -281,11 +310,24 @@ export function TreaChatWidget() {
   }
 
   function finalizeOnboarding(nextProfile: {
+    whatsappNumber?: string;
     treatment: string;
     budgetRangeUsd: string;
     country: string;
     ageGroup: string;
+    travelMonth?: string;
+    reportsAvailable?: string;
   }) {
+    void persistOnboardingProfile({
+      whatsappNumber: nextProfile.whatsappNumber || profile.whatsappNumber,
+      treatment: nextProfile.treatment,
+      budgetRangeUsd: nextProfile.budgetRangeUsd,
+      country: nextProfile.country,
+      ageGroup: nextProfile.ageGroup,
+      travelMonth: nextProfile.travelMonth || profile.travelMonth,
+      reportsAvailable: nextProfile.reportsAvailable || profile.reportsAvailable,
+    });
+
     setMessages((previous) => [
       ...previous,
       {
@@ -460,10 +502,13 @@ export function TreaChatWidget() {
         ]);
       } else {
         finalizeOnboarding({
+          whatsappNumber: nextProfile.whatsappNumber,
           treatment: nextProfile.treatment,
           budgetRangeUsd: nextProfile.budgetRangeUsd,
           country: nextProfile.country,
           ageGroup: nextProfile.ageGroup,
+          travelMonth: nextProfile.travelMonth,
+          reportsAvailable: nextProfile.reportsAvailable,
         });
       }
 
@@ -584,10 +629,13 @@ export function TreaChatWidget() {
       setReportStatus("Report uploaded successfully.");
       setRequiresReportUpload(false);
       finalizeOnboarding({
+        whatsappNumber: profile.whatsappNumber,
         treatment: profile.treatment,
         budgetRangeUsd: profile.budgetRangeUsd,
         country: profile.country,
         ageGroup: profile.ageGroup,
+        travelMonth: profile.travelMonth,
+        reportsAvailable: profile.reportsAvailable,
       });
     } catch (error) {
       setReportStatus(
@@ -602,10 +650,13 @@ export function TreaChatWidget() {
     setReportStatus("Report upload skipped. You can share it later.");
     setRequiresReportUpload(false);
     finalizeOnboarding({
+      whatsappNumber: profile.whatsappNumber,
       treatment: profile.treatment,
       budgetRangeUsd: profile.budgetRangeUsd,
       country: profile.country,
       ageGroup: profile.ageGroup,
+      travelMonth: profile.travelMonth,
+      reportsAvailable: profile.reportsAvailable,
     });
   }
 
