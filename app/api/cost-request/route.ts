@@ -23,8 +23,18 @@ function normalizeString(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
 }
 
-function getAwsRegion() {
-  return process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || "";
+function getAppRegion() {
+  return (
+    process.env.APP_REGION ||
+    process.env.APP_DEFAULT_REGION ||
+    process.env.AWS_REGION ||
+    process.env.AWS_DEFAULT_REGION ||
+    ""
+  );
+}
+
+function getInquiriesTableName() {
+  return process.env.DDB_INQUIRIES_TABLE_NAME || process.env.AWS_INQUIRIES_TABLE_NAME || "";
 }
 
 function shouldAutoCreateTables() {
@@ -36,7 +46,7 @@ let ddbDocClient: DynamoDBDocumentClient | null = null;
 let inquiryTableEnsured = false;
 
 function getDocClient() {
-  const region = getAwsRegion();
+  const region = getAppRegion();
 
   if (!region) {
     return null;
@@ -54,13 +64,13 @@ function getDocClient() {
 }
 
 async function ensureInquiryTableExists() {
-  const tableName = process.env.AWS_INQUIRIES_TABLE_NAME;
+  const tableName = getInquiriesTableName();
 
   if (!tableName || !shouldAutoCreateTables() || inquiryTableEnsured) {
     return;
   }
 
-  const region = getAwsRegion();
+  const region = getAppRegion();
 
   if (!region) {
     return;
@@ -119,7 +129,7 @@ export async function POST(request: Request) {
   }
 
   const client = getDocClient();
-  const tableName = process.env.AWS_INQUIRIES_TABLE_NAME;
+  const tableName = getInquiriesTableName();
 
   if (client && tableName) {
     await ensureInquiryTableExists();

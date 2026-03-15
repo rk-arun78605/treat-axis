@@ -184,8 +184,8 @@ function isValidResponseShape(value: unknown): value is HospitalResearchResponse
   );
 }
 
-async function fetchOpenAiHospitalResearch(hospitalId: string, treatment: string) {
-  const apiKey = process.env.OPENAI_API_KEY;
+async function fetchPerplexityHospitalResearch(hospitalId: string, treatment: string) {
+  const apiKey = process.env.PERPLEXITY_API_KEY;
 
   if (!apiKey) {
     return null;
@@ -197,9 +197,9 @@ async function fetchOpenAiHospitalResearch(hospitalId: string, treatment: string
     return null;
   }
 
-  const model = process.env.OPENAI_MODEL || "gpt-4.1-mini";
+  const model = process.env.PERPLEXITY_MODEL || "sonar";
 
-  const response = await fetch("https://api.openai.com/v1/responses", {
+  const response = await fetch("https://api.perplexity.ai/chat/completions", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${apiKey}`,
@@ -207,7 +207,7 @@ async function fetchOpenAiHospitalResearch(hospitalId: string, treatment: string
     },
     body: JSON.stringify({
       model,
-      input: [
+      messages: [
         {
           role: "system",
           content:
@@ -218,6 +218,7 @@ async function fetchOpenAiHospitalResearch(hospitalId: string, treatment: string
           content: `Hospital profile: ${JSON.stringify(hospital)}\nTreatment query: ${treatment}\n\nReturn JSON only with this exact shape: {"illnessOverview":"...","treatmentAtHospital":"...","specialtyFit":"...","doctorInsights":["...","..."],"estimatedDuration":"...","estimatedCostRange":"...","nextStep":"..."}. Keep concise and patient-friendly.`,
         },
       ],
+      temperature: 0.2,
     }),
   });
 
@@ -225,8 +226,10 @@ async function fetchOpenAiHospitalResearch(hospitalId: string, treatment: string
     return null;
   }
 
-  const data = (await response.json()) as { output_text?: string };
-  const text = data.output_text || "";
+  const data = (await response.json()) as {
+    choices?: Array<{ message?: { content?: string } }>;
+  };
+  const text = data.choices?.[0]?.message?.content || "";
 
   if (!text) {
     return null;
@@ -279,7 +282,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "Hospital not found." }, { status: 404 });
   }
 
-  const aiResult = await fetchOpenAiHospitalResearch(hospitalId, treatment).catch(() => null);
+  const aiResult = await fetchPerplexityHospitalResearch(hospitalId, treatment).catch(() => null);
 
   return NextResponse.json({
     result: aiResult || fallback,

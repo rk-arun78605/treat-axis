@@ -188,8 +188,18 @@ function buildIndiaCarePlan(payload: {
   ].join("\n\n");
 }
 
-function getAwsRegion() {
-  return process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || "";
+function getAppRegion() {
+  return (
+    process.env.APP_REGION ||
+    process.env.APP_DEFAULT_REGION ||
+    process.env.AWS_REGION ||
+    process.env.AWS_DEFAULT_REGION ||
+    ""
+  );
+}
+
+function getChatTableName() {
+  return process.env.DDB_CHAT_TABLE_NAME || process.env.AWS_CHAT_TABLE_NAME || "";
 }
 
 function shouldAutoCreateTables() {
@@ -201,7 +211,7 @@ let ddbDocClient: DynamoDBDocumentClient | null = null;
 let chatTableEnsured = false;
 
 function getDocClient() {
-  const region = getAwsRegion();
+  const region = getAppRegion();
 
   if (!region) {
     return null;
@@ -219,13 +229,13 @@ function getDocClient() {
 }
 
 async function ensureChatTableExists() {
-  const tableName = process.env.AWS_CHAT_TABLE_NAME;
+  const tableName = getChatTableName();
 
   if (!tableName || !shouldAutoCreateTables() || chatTableEnsured) {
     return;
   }
 
-  const region = getAwsRegion();
+  const region = getAppRegion();
 
   if (!region) {
     return;
@@ -278,7 +288,7 @@ async function saveChatRecord(record: {
   attendantRequired: string;
   createdAt: string;
 }) {
-  const tableName = process.env.AWS_CHAT_TABLE_NAME;
+  const tableName = getChatTableName();
   const client = getDocClient();
 
   if (!tableName || !client) {
@@ -397,15 +407,15 @@ async function generateAssistantMessage(input: {
     });
   }
 
-  const apiKey = process.env.OPENAI_API_KEY;
+  const apiKey = process.env.PERPLEXITY_API_KEY;
 
   if (!apiKey) {
     return buildFallbackMessage(input);
   }
 
-  const model = process.env.OPENAI_MODEL || "gpt-4.1-mini";
+  const model = process.env.PERPLEXITY_MODEL || "sonar";
 
-  const response = await fetch("https://api.openai.com/v1/responses", {
+  const response = await fetch("https://api.perplexity.ai/chat/completions", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${apiKey}`,
@@ -413,7 +423,7 @@ async function generateAssistantMessage(input: {
     },
     body: JSON.stringify({
       model,
-      input: [
+      messages: [
         {
           role: "system",
           content:
@@ -424,6 +434,7 @@ async function generateAssistantMessage(input: {
           content: `Question: ${input.question}\nWhatsApp: ${input.whatsappNumber}\nCare tier selected: ${input.careTier}\nTreatment: ${input.treatment}\nBudget: ${input.budgetRangeUsd}\nCountry: ${input.country}\nAge group: ${input.ageGroup}\nTravel month: ${input.travelMonth}\nReports available: ${input.reportsAvailable}\nAttendant required: ${input.attendantRequired}`,
         },
       ],
+      temperature: 0.2,
     }),
   });
 
@@ -431,9 +442,13 @@ async function generateAssistantMessage(input: {
     return buildFallbackMessage(input);
   }
 
-  const data = (await response.json()) as { output_text?: string };
+  const data = (await response.json()) as {
+    choices?: Array<{ message?: { content?: string } }>;
+  };
 
-  let output = data.output_text || buildFallbackMessage(input);
+  const content = data.choices?.[0]?.message?.content || "";
+
+  let output = content || buildFallbackMessage(input);
 
   if (input.travelMonth) {
     output = output.replace(/\b(what month do you want to travel\?|expected travel month\??|share your expected travel month\.?)/gi, "");

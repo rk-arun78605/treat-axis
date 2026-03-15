@@ -255,7 +255,7 @@ function extractJsonObject(text: string) {
   return text.slice(firstBrace, lastBrace + 1);
 }
 
-function normalizeOpenAiOptions(value: unknown): ItineraryResearchOption[] | null {
+function normalizeModelOptions(value: unknown): ItineraryResearchOption[] | null {
   if (!Array.isArray(value)) {
     return null;
   }
@@ -292,16 +292,16 @@ function normalizeOpenAiOptions(value: unknown): ItineraryResearchOption[] | nul
   return normalized.length > 0 ? normalized : null;
 }
 
-async function fetchOpenAiResearchOptions(query: string) {
-  const apiKey = process.env.OPENAI_API_KEY;
+async function fetchPerplexityResearchOptions(query: string) {
+  const apiKey = process.env.PERPLEXITY_API_KEY;
 
   if (!apiKey) {
     return null;
   }
 
-  const model = process.env.OPENAI_MODEL || "gpt-4.1-mini";
+  const model = process.env.PERPLEXITY_MODEL || "sonar";
 
-  const response = await fetch("https://api.openai.com/v1/responses", {
+  const response = await fetch("https://api.perplexity.ai/chat/completions", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${apiKey}`,
@@ -309,7 +309,7 @@ async function fetchOpenAiResearchOptions(query: string) {
     },
     body: JSON.stringify({
       model,
-      input: [
+      messages: [
         {
           role: "system",
           content:
@@ -320,6 +320,7 @@ async function fetchOpenAiResearchOptions(query: string) {
           content: `Illness query: ${query}\n\nReturn JSON only with this shape: {\"options\":[{\"location\":\"Delhi\",\"estimatedCostRange\":\"...\",\"treatmentTime\":\"...\",\"visa\":\"...\",\"flight\":\"...\",\"stay\":\"...\",\"postTreatmentCare\":\"...\",\"food\":\"...\",\"hotel\":\"...\",\"medicines\":\"...\"},{\"location\":\"Bengaluru\",...},{\"location\":\"Kerala\",...}]}. Keep each field short and patient-friendly.`,
         },
       ],
+      temperature: 0.2,
     }),
   });
 
@@ -327,8 +328,10 @@ async function fetchOpenAiResearchOptions(query: string) {
     return null;
   }
 
-  const data = (await response.json()) as { output_text?: string };
-  const outputText = data.output_text || "";
+  const data = (await response.json()) as {
+    choices?: Array<{ message?: { content?: string } }>;
+  };
+  const outputText = data.choices?.[0]?.message?.content || "";
 
   if (!outputText) {
     return null;
@@ -336,7 +339,7 @@ async function fetchOpenAiResearchOptions(query: string) {
 
   try {
     const parsed = JSON.parse(outputText) as { options?: unknown };
-    return normalizeOpenAiOptions(parsed.options);
+    return normalizeModelOptions(parsed.options);
   } catch {
     const extracted = extractJsonObject(outputText);
 
@@ -346,7 +349,7 @@ async function fetchOpenAiResearchOptions(query: string) {
 
     try {
       const parsed = JSON.parse(extracted) as { options?: unknown };
-      return normalizeOpenAiOptions(parsed.options);
+      return normalizeModelOptions(parsed.options);
     } catch {
       return null;
     }
@@ -396,11 +399,11 @@ export async function POST(request: Request) {
   }
 
   const fallback = buildFallbackOptions(query);
-  const researched = await fetchOpenAiResearchOptions(query).catch(() => null);
+  const researched = await fetchPerplexityResearchOptions(query).catch(() => null);
   const options = mergeOptionsWithFallback(fallback, researched);
 
   return NextResponse.json({
     options,
-    source: researched ? "openai" : "fallback",
+    source: researched ? "perplexity" : "fallback",
   });
 }

@@ -50,8 +50,18 @@ let ddbDocClient: DynamoDBDocumentClient | null = null;
 let ddbClient: DynamoDBClient | null = null;
 let inquiryTableEnsured = false;
 
-function getAwsRegion() {
-  return process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || "";
+function getAppRegion() {
+  return (
+    process.env.APP_REGION ||
+    process.env.APP_DEFAULT_REGION ||
+    process.env.AWS_REGION ||
+    process.env.AWS_DEFAULT_REGION ||
+    ""
+  );
+}
+
+function getInquiriesTableName() {
+  return process.env.DDB_INQUIRIES_TABLE_NAME || process.env.AWS_INQUIRIES_TABLE_NAME || "";
 }
 
 function shouldAutoCreateTables() {
@@ -59,7 +69,7 @@ function shouldAutoCreateTables() {
 }
 
 function getDdbClient() {
-  const region = getAwsRegion();
+  const region = getAppRegion();
 
   if (!region) {
     return null;
@@ -77,13 +87,13 @@ function getDdbClient() {
 }
 
 async function ensureInquiryTableExists() {
-  const tableName = process.env.AWS_INQUIRIES_TABLE_NAME;
+  const tableName = getInquiriesTableName();
 
   if (!tableName || !shouldAutoCreateTables() || inquiryTableEnsured) {
     return;
   }
 
-  const region = getAwsRegion();
+  const region = getAppRegion();
 
   if (!region) {
     return;
@@ -128,7 +138,7 @@ async function ensureInquiryTableExists() {
 }
 
 async function saveInquiryToDynamo(inquiry: Inquiry) {
-  const tableName = process.env.AWS_INQUIRIES_TABLE_NAME;
+  const tableName = getInquiriesTableName();
   const client = getDdbClient();
 
   if (!tableName || !client) {
@@ -250,7 +260,7 @@ async function dispatchLeads(inquiry: Inquiry) {
   );
   const hubspotConfigured = Boolean(process.env.HUBSPOT_PRIVATE_APP_TOKEN);
   const dynamoConfigured = Boolean(
-    getAwsRegion() && process.env.AWS_INQUIRIES_TABLE_NAME,
+    getAppRegion() && getInquiriesTableName(),
   );
 
   if (leadWebhookUrl) {

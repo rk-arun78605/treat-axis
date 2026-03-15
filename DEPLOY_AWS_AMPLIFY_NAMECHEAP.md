@@ -28,12 +28,12 @@ Amplify app -> App settings -> Environment variables
 
 Copy from `.env.production.example`:
 
-- `AWS_REGION`
+- `APP_REGION`
 - `AUTO_CREATE_DYNAMO_TABLES`
-- `AWS_INQUIRIES_TABLE_NAME`
-- `AWS_CHAT_TABLE_NAME`
-- `OPENAI_API_KEY`
-- `OPENAI_MODEL`
+- `DDB_INQUIRIES_TABLE_NAME`
+- `DDB_CHAT_TABLE_NAME`
+- `PERPLEXITY_API_KEY`
+- `PERPLEXITY_MODEL`
 - Optional integrations:
   - `RESEND_API_KEY`
   - `LEAD_EMAIL_FROM`
@@ -57,8 +57,8 @@ Your API routes use DynamoDB. Ensure the Amplify hosting compute role has permis
 
 for:
 
-- `AWS_INQUIRIES_TABLE_NAME`
-- `AWS_CHAT_TABLE_NAME`
+- `DDB_INQUIRIES_TABLE_NAME`
+- `DDB_CHAT_TABLE_NAME`
 
 Best practice: create tables manually and set `AUTO_CREATE_DYNAMO_TABLES=false`.
 
