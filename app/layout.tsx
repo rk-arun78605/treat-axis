@@ -69,6 +69,9 @@ export const metadata: Metadata = {
     description:
       "Explore treatment abroad with a structured patient inquiry flow and a conversion-focused medical tourism homepage.",
   },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+  },
   robots: {
     index: true,
     follow: true,
@@ -185,6 +188,13 @@ gtag('config', 'G-GJ4X5Y1YJE');`}
               <a href="https://www.linkedin.com/company/treataxis" target="_blank" rel="noreferrer" className="rounded-full border border-[var(--line)] px-3 py-2 transition hover:border-[var(--brand)] hover:text-[var(--brand)]">LinkedIn</a>
               <a href="https://www.instagram.com/treataxis" target="_blank" rel="noreferrer" className="rounded-full border border-[var(--line)] px-3 py-2 transition hover:border-[var(--brand)] hover:text-[var(--brand)]">Instagram</a>
               <a href="https://www.facebook.com/treataxis" target="_blank" rel="noreferrer" className="rounded-full border border-[var(--line)] px-3 py-2 transition hover:border-[var(--brand)] hover:text-[var(--brand)]">Facebook</a>
+            </div>
+            <div className="mt-3 flex flex-wrap items-center justify-center gap-2 text-xs font-semibold text-slate-700">
+              <Link href="/about" className="rounded-full border border-[var(--line)] px-3 py-2 transition hover:border-[var(--brand)] hover:text-[var(--brand)]">About</Link>
+              <Link href="/contact" className="rounded-full border border-[var(--line)] px-3 py-2 transition hover:border-[var(--brand)] hover:text-[var(--brand)]">Contact</Link>
+              <Link href="/privacy" className="rounded-full border border-[var(--line)] px-3 py-2 transition hover:border-[var(--brand)] hover:text-[var(--brand)]">Privacy</Link>
+              <Link href="/terms" className="rounded-full border border-[var(--line)] px-3 py-2 transition hover:border-[var(--brand)] hover:text-[var(--brand)]">Terms</Link>
+              <Link href="/medical-disclaimer" className="rounded-full border border-[var(--line)] px-3 py-2 transition hover:border-[var(--brand)] hover:text-[var(--brand)]">Medical Disclaimer</Link>
             </div>
           </div>
         </footer>

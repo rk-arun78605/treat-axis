@@ -93,6 +93,36 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 0.9,
     },
+    {
+      url: "https://www.treataxis.com/about",
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: "https://www.treataxis.com/contact",
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: "https://www.treataxis.com/privacy",
+      lastModified,
+      changeFrequency: "yearly",
+      priority: 0.4,
+    },
+    {
+      url: "https://www.treataxis.com/terms",
+      lastModified,
+      changeFrequency: "yearly",
+      priority: 0.4,
+    },
+    {
+      url: "https://www.treataxis.com/medical-disclaimer",
+      lastModified,
+      changeFrequency: "yearly",
+      priority: 0.5,
+    },
     ...treatmentRoutes,
     ...destinationRoutes,
   ];

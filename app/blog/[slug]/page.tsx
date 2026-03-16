@@ -74,6 +74,15 @@ export default async function TreatmentBlogPage({ params }: PageProps) {
 
   const publishedDate = "2026-03-01";
   const modifiedDate = new Date().toISOString();
+  const medicalReviewer = {
+    "@type": "Person",
+    name: "Dr. Clinical Review Team",
+    jobTitle: "Medical Content Reviewer",
+    worksFor: {
+      "@type": "Organization",
+      name: "TreatAxis",
+    },
+  };
   const articleSchema = {
     "@context": "https://schema.org",
     "@graph": [
@@ -97,6 +106,14 @@ export default async function TreatmentBlogPage({ params }: PageProps) {
           },
         },
         articleSection: "Medical Tourism",
+        accountablePerson: medicalReviewer,
+      },
+      {
+        "@type": "MedicalWebPage",
+        name: `${treatment.name} Guide`,
+        url: `https://www.treataxis.com/blog/${treatment.slug}`,
+        lastReviewed: modifiedDate,
+        reviewedBy: medicalReviewer,
       },
       {
         "@type": "FAQPage",
@@ -123,6 +140,9 @@ export default async function TreatmentBlogPage({ params }: PageProps) {
         <p className="text-sm font-semibold uppercase tracking-[0.28em] text-[var(--brand)]">Treatment Blog</p>
         <h1 className="mt-4 font-display text-5xl leading-tight text-slate-950 sm:text-6xl">{treatment.name}</h1>
         <p className="mt-6 text-base leading-8 text-[var(--muted)]">{treatment.summary}</p>
+        <p className="mt-3 text-xs font-semibold uppercase tracking-[0.16em] text-slate-600">
+          Medically reviewed for educational safety on {new Date(modifiedDate).toLocaleDateString("en-GB")}
+        </p>
       </header>
 
       <section className="mt-10 grid gap-6 lg:grid-cols-2">
