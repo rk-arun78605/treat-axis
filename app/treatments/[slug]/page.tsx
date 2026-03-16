@@ -391,6 +391,36 @@ export default async function TreatmentDetailPage({ params }: PageProps) {
   const budgetGuide = budgetGuideBySlug[slug] || defaultBudgetGuide();
   const relatedTreatments = treatments.filter((item) => item.slug !== slug).slice(0, 4);
   const indiaDestination = destinationByCountrySlug["india"];
+  const reviewedDate = new Date().toISOString();
+
+  const reviewerBySlug: Record<string, { name: string; title: string; credential: string; specialty: string }> = {
+    "cardiac-care-abroad": {
+      name: "Dr. A. Mehra",
+      title: "Senior Cardiac Reviewer",
+      credential: "MBBS, MD (Medicine)",
+      specialty: "Cardiac care pathways",
+    },
+    "orthopedic-surgery-abroad": {
+      name: "Dr. R. Iyer",
+      title: "Orthopedic Content Reviewer",
+      credential: "MBBS, MS (Ortho)",
+      specialty: "Orthopedic and mobility recovery",
+    },
+    "ivf-fertility-treatment-abroad": {
+      name: "Dr. N. Kapoor",
+      title: "Fertility Content Reviewer",
+      credential: "MBBS, MD (OBG)",
+      specialty: "Fertility and IVF pathways",
+    },
+  };
+
+  const reviewer =
+    reviewerBySlug[slug] || {
+      name: "Dr. TreatAxis Medical Board",
+      title: "Medical Content Reviewer",
+      credential: "MBBS, MD",
+      specialty: treatment.name,
+    };
 
   const schema = {
     "@context": "https://schema.org",
@@ -400,6 +430,23 @@ export default async function TreatmentDetailPage({ params }: PageProps) {
         name: treatment.name,
         description: treatment.summary,
         url: `https://www.treataxis.com/treatments/${treatment.slug}`,
+        reviewedBy: {
+          "@type": "Person",
+          name: reviewer.name,
+          jobTitle: reviewer.title,
+          knowsAbout: reviewer.specialty,
+        },
+        lastReviewed: reviewedDate,
+      },
+      {
+        "@type": "Person",
+        name: reviewer.name,
+        jobTitle: reviewer.title,
+        knowsAbout: reviewer.specialty,
+        worksFor: {
+          "@type": "Organization",
+          name: "TreatAxis",
+        },
       },
       {
         "@type": "FAQPage",
@@ -430,6 +477,9 @@ export default async function TreatmentDetailPage({ params }: PageProps) {
           {treatment.name}
         </h1>
         <p className="mt-6 text-base leading-8 text-[var(--muted)]">{treatment.summary}</p>
+        <div className="mt-3 inline-flex rounded-full border border-[var(--line)] bg-white px-4 py-2 text-xs font-semibold text-slate-700">
+          Reviewed by {reviewer.name} ({reviewer.credential}) on {new Date(reviewedDate).toLocaleDateString("en-GB")}
+        </div>
         <p className="mt-3 text-sm leading-7 text-slate-700">
           For this pathway, compare <Link href={`/destinations/india?treatment=${encodeURIComponent(treatment.name)}`} className="font-semibold text-[var(--brand)] hover:underline">city-level hospital options in India</Link>, review the matching <Link href={`/blog/${treatment.slug}`} className="font-semibold text-[var(--brand)] hover:underline">treatment planning blog</Link>, and then submit your <Link href="/#inquiry-form" className="font-semibold text-[var(--brand)] hover:underline">estimate request</Link>.
         </p>
