@@ -15,9 +15,40 @@ type LeadFormProps = {
   compact?: boolean;
 };
 
+const countryCodeOptions = [
+  "+233 Ghana",
+  "+234 Nigeria",
+  "+254 Kenya",
+  "+255 Tanzania",
+  "+256 Uganda",
+  "+251 Ethiopia",
+  "+212 Morocco",
+  "+20 Egypt",
+  "+960 Maldives",
+  "+91 India",
+  "+971 United Arab Emirates",
+  "+966 Saudi Arabia",
+  "+974 Qatar",
+  "+965 Kuwait",
+  "+968 Oman",
+  "+973 Bahrain",
+  "+1 United States",
+  "+1 Canada",
+  "+44 United Kingdom",
+  "+61 Australia",
+  "+27 South Africa",
+  "+880 Bangladesh",
+  "+92 Pakistan",
+  "+977 Nepal",
+  "+94 Sri Lanka",
+  "+65 Singapore",
+  "+60 Malaysia",
+];
+
 export function LeadForm({ className = "", compact = false }: LeadFormProps) {
   const [submission, setSubmission] = useState<SubmissionState>(initialState);
   const [trackedFields, setTrackedFields] = useState<Record<string, boolean>>({});
+  const [countryCode, setCountryCode] = useState(countryCodeOptions[0]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -27,7 +58,11 @@ export function LeadForm({ className = "", compact = false }: LeadFormProps) {
     setSubmission({ kind: "loading" });
     trackEvent("inquiry_submit_started", { location: "hero" });
 
-    const payload = Object.fromEntries(formData.entries());
+    const payload = Object.fromEntries(formData.entries()) as Record<string, FormDataEntryValue>;
+    const dialCode = String(payload.countryCode || countryCode).split(" ")[0] || "";
+    const digits = String(payload.phone || "").replace(/\D/g, "");
+    payload.phone = `${dialCode}${digits}`;
+    delete payload.countryCode;
 
     try {
       const response = await fetch("/api/inquiries", {
@@ -45,6 +80,7 @@ export function LeadForm({ className = "", compact = false }: LeadFormProps) {
       }
 
       form.reset();
+      setCountryCode(countryCodeOptions[0]);
       setSubmission({
         kind: "success",
         message:
@@ -126,14 +162,31 @@ export function LeadForm({ className = "", compact = false }: LeadFormProps) {
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="space-y-2 text-sm">
             <span className="font-medium text-slate-200">Phone or WhatsApp</span>
-            <input
-              name="phone"
-              type="tel"
-              required
-              placeholder="+91 / +44 / +971"
-              onFocus={() => trackField("phone")}
-              className="w-full rounded-2xl border border-white/10 bg-white/8 px-4 py-3 text-white outline-none transition placeholder:text-slate-400 focus:border-amber-300"
-            />
+            <div className="grid gap-2 sm:grid-cols-[0.52fr_0.48fr]">
+              <select
+                name="countryCode"
+                value={countryCode}
+                required
+                onFocus={() => trackField("countryCode")}
+                onChange={(event) => setCountryCode(event.target.value)}
+                className="w-full rounded-2xl border border-white/10 bg-white/8 px-4 py-3 text-white outline-none transition focus:border-amber-300"
+              >
+                {countryCodeOptions.map((option) => (
+                  <option key={option} value={option} className="text-slate-900">
+                    {option}
+                  </option>
+                ))}
+              </select>
+              <input
+                name="phone"
+                type="tel"
+                required
+                inputMode="numeric"
+                placeholder="Mobile number"
+                onFocus={() => trackField("phone")}
+                className="w-full rounded-2xl border border-white/10 bg-white/8 px-4 py-3 text-white outline-none transition placeholder:text-slate-400 focus:border-amber-300"
+              />
+            </div>
           </label>
 
           <label className="space-y-2 text-sm">

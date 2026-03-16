@@ -52,7 +52,7 @@ const faqItems = [
 
 const trustSignals = [
   "Patient-first inquiry flow designed for planned medical travel",
-  "Clear treatment abroad guidance for hospitals, doctors, visa, stay, and recovery",
+  "Global treatment abroad guidance for hospitals, doctors, India medical visa, stay, and recovery",
   "Webhook-ready lead system for CRM, email, or automation handoff",
   "Clear visual hierarchy, fast scanning, and mobile-first conversion UX",
 ];
@@ -74,9 +74,9 @@ const patientSupportHighlights = [
       "Hotel options near the hospital, food suitability, medicine pickup, and post-treatment follow-up timing.",
   },
   {
-    title: "Africa and Maldives focus",
+    title: "Worldwide patient focus",
     description:
-      "Content designed for patients traveling from East Africa, West Africa, North Africa, and Maldives for planned care in India.",
+      "Content designed for patients traveling from Africa, the Middle East, Europe, North America, and Asia-Pacific for planned care in India.",
   },
   {
     title: "Multiple hospital options",
@@ -115,9 +115,18 @@ const medicalTourismContent = [
 ];
 
 export const metadata: Metadata = {
-  title: "Medical Tourism in India | TreatAxis Care Planning",
+  title: "Medical Treatment Abroad in India | Global Patient Care",
   description:
-    "Plan treatment in India with hospital comparisons, visa guidance, and recovery support built for international patients.",
+    "Plan medical treatment abroad in India with hospital comparisons, medical visa guidance, and recovery support for patients worldwide.",
+  keywords: [
+    "medical treatment abroad",
+    "medical treatment india",
+    "treatment in india for international patients",
+    "india medical visa for treatment",
+    "global patient treatment planning",
+    "medical tourism india",
+    "international patient services india",
+  ],
   alternates: {
     canonical: "/",
     languages: {
@@ -128,17 +137,17 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Medical Tourism in India | TreatAxis Care Planning",
+    title: "Medical Treatment Abroad in India | Global Patient Care",
     description:
-      "Plan treatment in India with hospital comparisons, visa guidance, and recovery support built for international patients.",
+      "Plan medical treatment abroad in India with hospital comparisons, medical visa guidance, and recovery support for patients worldwide.",
     url: "https://www.treataxis.com",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Medical Tourism in India | TreatAxis Care Planning",
+    title: "Medical Treatment Abroad in India | Global Patient Care",
     description:
-      "Plan treatment in India with hospital comparisons, visa guidance, and recovery support built for international patients.",
+      "Plan medical treatment abroad in India with hospital comparisons, medical visa guidance, and recovery support for patients worldwide.",
   },
 };
 
@@ -205,10 +214,10 @@ export default function Home() {
                 Plan treatment abroad with confidence
               </p>
               <h1 className="mt-5 max-w-4xl font-display text-5xl leading-none text-slate-950 sm:text-6xl lg:text-7xl">
-                Plan medical travel to India with clarity and confidence.
+                Plan medical treatment in India with clarity and confidence.
               </h1>
               <p className="mt-6 max-w-3xl text-lg leading-8 text-[var(--muted)] sm:text-xl">
-                TreatAxis helps patients from Africa and Maldives compare treatment pathways in India with hospital guidance, visa direction, hotel planning, food support, and realistic post-treatment recovery timelines.
+                TreatAxis helps patients worldwide compare treatment pathways in India with hospital guidance, medical visa direction, hotel planning, food support, and realistic post-treatment recovery timelines.
               </p>
             </div>
 

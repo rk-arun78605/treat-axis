@@ -147,6 +147,23 @@ const countryCodes = [
   "+20 Egypt",
   "+960 Maldives",
   "+91 India",
+  "+971 United Arab Emirates",
+  "+966 Saudi Arabia",
+  "+974 Qatar",
+  "+965 Kuwait",
+  "+968 Oman",
+  "+973 Bahrain",
+  "+1 United States",
+  "+1 Canada",
+  "+44 United Kingdom",
+  "+61 Australia",
+  "+27 South Africa",
+  "+880 Bangladesh",
+  "+92 Pakistan",
+  "+977 Nepal",
+  "+94 Sri Lanka",
+  "+65 Singapore",
+  "+60 Malaysia",
 ];
 
 const introMessage =

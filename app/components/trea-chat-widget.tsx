@@ -128,8 +128,19 @@ const dialCodeByRegion: Record<string, string> = {
   GB: "+44",
   AE: "+971",
   SA: "+966",
+  QA: "+974",
+  KW: "+965",
+  OM: "+968",
+  BH: "+973",
   AU: "+61",
   NG: "+234",
+  ZA: "+27",
+  BD: "+880",
+  PK: "+92",
+  NP: "+977",
+  LK: "+94",
+  SG: "+65",
+  MY: "+60",
 };
 
 const dialCodeByCountryName: Record<string, string> = {
@@ -152,6 +163,17 @@ const dialCodeByCountryName: Record<string, string> = {
   "united arab emirates": "+971",
   "saudi arabia": "+966",
   australia: "+61",
+  qatar: "+974",
+  kuwait: "+965",
+  oman: "+968",
+  bahrain: "+973",
+  "south africa": "+27",
+  bangladesh: "+880",
+  pakistan: "+92",
+  nepal: "+977",
+  "sri lanka": "+94",
+  singapore: "+65",
+  malaysia: "+60",
 };
 
 function detectDialCode() {
