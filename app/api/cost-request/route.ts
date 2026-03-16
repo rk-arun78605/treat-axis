@@ -23,6 +23,8 @@ type CostRequestResponse = {
   message: string;
   inquiryId?: string;
   saved?: boolean;
+  emailSent?: boolean;
+  emailConfigured?: boolean;
   resolvedRegion?: string;
   resolvedTableName?: string;
 };
@@ -33,6 +35,60 @@ function jsonResponse(payload: CostRequestResponse, status?: number) {
   }
 
   return NextResponse.json(payload);
+}
+
+async function sendCostRequestEmailViaResend(payload: {
+  inquiryId: string;
+  phone: string;
+  treatmentQuery: string;
+  hospital: string;
+  city: string;
+  state: string;
+  promptId: string;
+  submittedAt: string;
+}) {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.LEAD_EMAIL_FROM;
+  const to = process.env.LEAD_EMAIL_TO;
+
+  if (!apiKey || !from || !to) {
+    return false;
+  }
+
+  const subject = `New TreatAxis check-price request: ${payload.hospital}`;
+  const html = `
+    <h2>New Check Price Request</h2>
+    <p><strong>Inquiry ID:</strong> ${payload.inquiryId}</p>
+    <p><strong>Phone:</strong> ${payload.phone}</p>
+    <p><strong>Treatment Query:</strong> ${payload.treatmentQuery || "Not specified"}</p>
+    <p><strong>Hospital:</strong> ${payload.hospital}</p>
+    <p><strong>City:</strong> ${payload.city || "Not specified"}</p>
+    <p><strong>State:</strong> ${payload.state || "Not specified"}</p>
+    <p><strong>Prompt ID:</strong> ${payload.promptId || "Not specified"}</p>
+    <p><strong>Submitted At:</strong> ${payload.submittedAt}</p>
+    <p><strong>Source:</strong> hero-ai</p>
+  `;
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from,
+      to: [to],
+      subject,
+      html,
+    }),
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Resend request failed: ${response.status}`);
+  }
+
+  return true;
 }
 
 function normalizeString(value: unknown) {
@@ -141,7 +197,11 @@ export async function POST(request: Request) {
   const city = normalizeString(body.city);
   const hospital = normalizeString(body.hospital);
   const inquiryId = crypto.randomUUID();
+  const submittedAt = new Date().toISOString();
   const resolvedRegion = getAppRegion();
+  const emailConfigured = Boolean(
+    process.env.RESEND_API_KEY && process.env.LEAD_EMAIL_FROM && process.env.LEAD_EMAIL_TO,
+  );
 
   if (!phone || !hospital) {
     return jsonResponse({
@@ -185,7 +245,7 @@ export async function POST(request: Request) {
           city,
           hospital,
           source: "hero-ai",
-          submittedAt: new Date().toISOString(),
+          submittedAt,
         },
       }),
     );
@@ -207,10 +267,32 @@ export async function POST(request: Request) {
     }, 502);
   }
 
+  let emailSent = false;
+  if (emailConfigured) {
+    emailSent = await sendCostRequestEmailViaResend({
+      inquiryId,
+      phone,
+      treatmentQuery,
+      hospital,
+      city,
+      state,
+      promptId,
+      submittedAt,
+    }).catch((error) => {
+      console.error("Failed to send cost request email", {
+        inquiryId,
+        reason: error instanceof Error ? error.message : "Unknown email failure.",
+      });
+      return false;
+    });
+  }
+
   return jsonResponse({
     message: "Cost request saved. TREA team can contact you with the exact estimate.",
     inquiryId,
     saved: true,
+    emailSent,
+    emailConfigured,
     resolvedRegion,
     resolvedTableName: tableName,
   });
