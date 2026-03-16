@@ -264,6 +264,9 @@ export default function Home() {
                     </Link>
                   ))}
                 </div>
+                <p className="mt-3 text-xs leading-6 text-[var(--muted)]">
+                  Country corridors: <Link href="/africa" className="font-semibold text-[var(--brand)] hover:underline">Africa and Maldives</Link> and <Link href="/countries" className="font-semibold text-[var(--brand)] hover:underline">US, UK, UAE, Saudi, Canada, Australia</Link>
+                </p>
               </div>
             </div>
           </section>

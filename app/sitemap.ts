@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { destinations, treatments } from "../lib/seo-content";
 import { africaCountries } from "../lib/africa-content";
+import { highVolumeCountries } from "../lib/high-volume-country-content";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();
@@ -68,8 +69,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 0.95,
     },
+    {
+      url: "https://www.treataxis.com/countries",
+      lastModified,
+      changeFrequency: "weekly",
+      priority: 0.95,
+    },
     ...africaCountries.map((item) => ({
       url: `https://www.treataxis.com/africa/${item.slug}`,
+      lastModified,
+      changeFrequency: "weekly" as const,
+      priority: 0.9,
+    })),
+    ...highVolumeCountries.map((item) => ({
+      url: `https://www.treataxis.com/countries/${item.slug}`,
       lastModified,
       changeFrequency: "weekly" as const,
       priority: 0.9,
